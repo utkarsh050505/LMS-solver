@@ -1,11 +1,12 @@
-# Use official Playwright image with browser dependencies pre-installed
-FROM mcr.microsoft.com/playwright:v1.49.0-jammy
+# Base image with all Linux GUI / Chromium dependencies pre-installed
+FROM mcr.microsoft.com/playwright:jammy
 
 WORKDIR /app
 
-# Copy package manifests and install dependencies
+# Install dependencies and Chromium browser
 COPY package*.json ./
 RUN npm install
+RUN npx playwright install chromium
 
 # Copy application files
 COPY . .
