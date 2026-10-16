@@ -137,6 +137,8 @@ async function ensureSetup() {
 
 // ─── Step 2: Prompt for User Credentials ────────────────────
 async function ensureCredentials() {
+  console.log("⚡ Built by Utkarsh\n");
+
   const currentEnv = readEnv();
   let email = currentEnv.LMS_EMAIL;
   let password = currentEnv.LMS_PASSWORD;
@@ -154,7 +156,8 @@ async function ensureCredentials() {
   }
 
   if (!email || !password) {
-    console.log("\n🔑 Please enter your BMSCE LMS login details:");
+    console.log("⚡ Built by Utkarsh");
+    console.log("🔑 Please enter your BMSCE LMS login details:");
     console.log("   (Your password will be masked with * and saved locally in .env)\n");
 
     email = await askQuestion("📧 BMSCE Email: ");
@@ -189,6 +192,7 @@ async function main() {
   console.log("╔════════════════════════════════════════════════════════════╗");
   console.log("║         🚀 BMSCE LMS COMPETITIVE CODING AUTO-SOLVER        ║");
   console.log("║        Automated solver with 42 Verified 100% Solutions    ║");
+  console.log("║                    ⚡ Built by Utkarsh                     ║");
   console.log("╚════════════════════════════════════════════════════════════╝\n");
 
   await ensureSetup();

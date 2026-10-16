@@ -1,5 +1,7 @@
 # 🚀 BMSCE LMS Competitive Coding Auto-Solver
 
+### Built by Utkarsh
+
 An automated solver that solves, tests, and submits all **42 problems** on the BMSCE LMS Competitive Coding course (`https://lms.bmsce.in`).
 
 ---

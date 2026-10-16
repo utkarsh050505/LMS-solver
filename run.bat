@@ -4,6 +4,7 @@ color 0A
 cls
 echo ============================================================
 echo           BMSCE LMS AUTO-SOLVER FOR CLASSMATES
+echo                    Built by Utkarsh
 echo ============================================================
 echo.
 
