@@ -57,8 +57,8 @@ a:/LMS-ki-mkc/
 
 Ensure the `.env` file contains:
 ```env
-LMS_EMAIL=utkarshmandal.cs24@bmsce.ac.in
-LMS_PASSWORD=Utkarsh@123
+LMS_EMAIL=yourname.cs24@bmsce.ac.in
+LMS_PASSWORD=your_password_here
 GROQ_API_KEY=gsk_...
 GROQ_MODEL=openai/gpt-oss-120b
 ```

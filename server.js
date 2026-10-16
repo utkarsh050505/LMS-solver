@@ -1,6 +1,6 @@
 // ══════════════════════════════════════════════════════════════════════
 // BMSCE LMS Auto-Solver - Web Application Server
-// Original Architecture & Engineering by Utkarsh Mandal
+// Original Architecture & Engineering by UM
 // ══════════════════════════════════════════════════════════════════════
 
 const express = require("express");
@@ -37,7 +37,7 @@ function getSolutionsDatabase() {
 app.get("/api/problems", (req, res) => {
   const db = getSolutionsDatabase();
   res.json({
-    author: "Utkarsh Mandal",
+    author: "UM",
     totalProblems: db.solutions.length,
     problems: db.solutions.map((s) => ({
       index: s.index,
@@ -61,7 +61,7 @@ app.post("/api/solve", async (req, res) => {
 
   const job = {
     id: jobId,
-    author: "Utkarsh Mandal",
+    author: "UM",
     email,
     target,
     status: "initializing",
@@ -84,7 +84,7 @@ app.post("/api/solve", async (req, res) => {
     success: true,
     jobId,
     message: "Auto-solver job initiated! Connect to SSE stream to monitor.",
-    trademark: "Engineered by Utkarsh Mandal",
+    trademark: "Engineered by UM",
   });
 });
 
@@ -128,7 +128,7 @@ app.get("/api/status/:jobId", (req, res) => {
 
   res.json({
     jobId: job.id,
-    author: "Utkarsh Mandal",
+    author: "UM",
     status: job.status,
     progress: job.progress,
     resultsCount: job.results.length,
@@ -154,7 +154,7 @@ function emitJobEvent(job, type, payload = {}) {
 
 // ─── Core Automation Engine (Playwright) ───────────────────
 async function runSolveJob(job, password) {
-  emitJobEvent(job, "log", { message: "🚀 Initializing Utkarsh Mandal Automation Core..." });
+  emitJobEvent(job, "log", { message: "🚀 Initializing Project UM Automation Core..." });
 
   const db = getSolutionsDatabase();
   const allProblems = db.solutions || [];
@@ -432,7 +432,7 @@ async function runSolveJob(job, password) {
 app.listen(PORT, () => {
   console.log(`\n════════════════════════════════════════════════════════════`);
   console.log(`  🚀 BMSCE LMS Auto-Solver Web Application Running`);
-  console.log(`  ⚡ Trademark & Engineered by Utkarsh Mandal`);
+  console.log(`  ⚡ Trademark & Engineered by UM`);
   console.log(`  🌐 Local URL: http://localhost:${PORT}`);
   console.log(`════════════════════════════════════════════════════════════\n`);
 });

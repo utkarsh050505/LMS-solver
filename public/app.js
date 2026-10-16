@@ -1,10 +1,10 @@
 // ══════════════════════════════════════════════════════════════════
 // BMSCE LMS Auto-Solver - Client Logic
-// Engineered & Architected by Utkarsh Mandal
+// Engineered & Architected by UM
 // ══════════════════════════════════════════════════════════════════
 
 console.log(
-  "%c⚡ BMSCE LMS AUTO-SOLVER\n%cOriginal Architecture & Development by Utkarsh Mandal (BMSCE CSE)\nAll Intellectual Property & Engine Logic © 2026 Utkarsh Mandal. All rights reserved.",
+  "%c⚡ BMSCE LMS AUTO-SOLVER\n%cOriginal Architecture & Development by UM\nAll Engine Logic © 2026 Project UM. All rights reserved.",
   "color: #06b6d4; font-size: 16px; font-weight: 800;",
   "color: #8b5cf6; font-size: 12px; font-weight: 600;"
 );
@@ -146,7 +146,7 @@ solveForm.addEventListener("submit", async (e) => {
     sessionStatus.className = "status-pill status-running";
     sessionStatus.textContent = "RUNNING";
 
-    appendLog("Connected to Utkarsh Mandal Execution Daemon...", "system");
+    appendLog("Connected to Project UM Execution Daemon...", "system");
     appendLog(`Authenticated target: ${email}`, "system");
 
     // Connect SSE Stream
