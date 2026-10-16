@@ -11,6 +11,8 @@
     "solve-all": "node runner.js",
     "solve:all": "node solve.js --all",
     "start": "node runner.js",
+    "web": "node server.js",
+    "web:dev": "node server.js",
     "scrape": "node scrape-problems.js",
     "build:json": "node build-solutions-json.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,7 +22,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cors": "^2.8.6",
     "dotenv": "^18.0.8",
+    "express": "^5.3.0",
     "groq-sdk": "^1.6.0",
     "playwright": "^1.64.1"
   }

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMSCE LMS Auto-Solver | Engineered by Utkarsh Mandal</title>
+  <meta name="description" content="Automated, instant solver for all 42 BMSCE LMS Competitive Coding problems. Engineered & Architected by Utkarsh Mandal.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Glow & Grid -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-grid"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="logo-box">
+          <span class="logo-text">UM</span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">LMS Auto-Solver</span>
+          <span class="brand-badge">BMSCE Competitive Coding</span>
+        </div>
+      </div>
+
+      <!-- Prominent Trademark Pill -->
+      <div class="trademark-pill" title="Original creator and system architect">
+        <span class="pulse-dot"></span>
+        <span class="trademark-label">ARCHITECT:</span>
+        <span class="trademark-name">Utkarsh Mandal™</span>
+        <span class="verified-icon">✓</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    <!-- Hero Header -->
+    <section class="hero-section">
+      <div class="creator-tag">
+        <span>⚡ VERIFIED ORIGINAL ENGINE BY UTKARSH MANDAL</span>
+      </div>
+      <h1 class="hero-title">
+        Solve All <span class="gradient-text">42 LMS Problems</span> in One Click
+      </h1>
+      <p class="hero-desc">
+        Automated AI-powered test execution with <strong>100% verified solutions</strong>, direct Monaco editor injection, and zero manual coding. Enter your LMS credentials to submit.
+      </p>
+
+      <div class="stats-ribbon">
+        <div class="stat-item">
+          <span class="stat-num">42 / 42</span>
+          <span class="stat-lbl">Accepted Solutions</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num">+1,050</span>
+          <span class="stat-lbl">Total XP Earned</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num">100%</span>
+          <span class="stat-lbl">Success Rate</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- App Viewport -->
+    <div class="app-viewport">
+      <!-- Input Card (Step 1) -->
+      <div class="card glass-card input-card" id="inputCard">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-badge">STEP 1</span>
+            <h2>Enter LMS Credentials</h2>
+          </div>
+          <span class="security-badge">🔒 Direct LMS Session</span>
+        </div>
+
+        <form id="solveForm" class="solve-form">
+          <div class="form-group">
+            <label for="emailInput">BMSCE Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon">📧</span>
+              <input 
+                type="email" 
+                id="emailInput" 
+                placeholder="yourname.cs24@bmsce.ac.in" 
+                required
+                autocomplete="email"
+              >
+            </div>
+            <small class="hint">Use your official college email linked to LMS</small>
+          </div>
+
+          <div class="form-group">
+            <label for="passwordInput">LMS Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input 
+                type="password" 
+                id="passwordInput" 
+                placeholder="••••••••••••" 
+                required
+                autocomplete="current-password"
+              >
+              <button type="button" class="toggle-pwd-btn" id="togglePwdBtn" aria-label="Toggle password visibility">
+                👁️
+              </button>
+            </div>
+            <small class="hint">Credentials are transmitted directly to your local LMS session</small>
+          </div>
+
+          <div class="form-group">
+            <label>Execution Mode</label>
+            <div class="mode-selector">
+              <label class="mode-option active">
+                <input type="radio" name="targetMode" value="all" checked>
+                <div class="mode-content">
+                  <span class="mode-title">Solve All 42 Problems</span>
+                  <span class="mode-sub">Full batch submission (+1050 XP)</span>
+                </div>
+                <span class="check-mark">✓</span>
+              </label>
+
+              <label class="mode-option">
+                <input type="radio" name="targetMode" value="0">
+                <div class="mode-content">
+                  <span class="mode-title">Test Run (Problem 1 Only)</span>
+                  <span class="mode-sub">Follow the FAT Chain verification</span>
+                </div>
+                <span class="check-mark">✓</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="startBtn">
+            <span class="btn-glow"></span>
+            <span class="btn-text">🚀 Launch Auto-Solver</span>
+          </button>
+        </form>
+
+        <div class="author-attribution">
+          <span>Engineered with precision by <strong>Utkarsh Mandal</strong> • BMSCE CSE</span>
+        </div>
+      </div>
+
+      <!-- Execution Dashboard (Step 2 - Initially Hidden) -->
+      <div class="card glass-card dashboard-card hidden" id="dashboardCard">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="live-dot"></span>
+            <h2>Active Solving Session</h2>
+          </div>
+          <div class="header-badges">
+            <span class="xp-badge" id="xpCounter">+0 XP</span>
+            <span class="status-pill status-running" id="sessionStatus">RUNNING</span>
+          </div>
+        </div>
+
+        <!-- Progress Overview -->
+        <div class="progress-section">
+          <div class="progress-info">
+            <div class="progress-stats">
+              <span class="progress-label">Problems Completed</span>
+              <span class="progress-count"><strong id="solvedCount">0</strong> / <span id="totalCount">42</span></span>
+            </div>
+            <span class="progress-percent" id="progressPercent">0%</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+          </div>
+        </div>
+
+        <!-- Dual Column: Problem Grid + Terminal Log -->
+        <div class="dashboard-grid">
+          <!-- Problem Cards Grid -->
+          <div class="problems-container">
+            <div class="container-header">
+              <h3>Problem Pipeline</h3>
+              <span class="chip" id="gridCounter">0 / 42 Solved</span>
+            </div>
+            <div class="problems-grid" id="problemsGrid">
+              <!-- Dynamically populated 42 problem pills -->
+            </div>
+          </div>
+
+          <!-- Live Terminal Output -->
+          <div class="terminal-container">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="terminal-title">utkarsh-solver@bmsce:~$</span>
+              <button class="terminal-clear-btn" id="clearLogsBtn">Clear</button>
+            </div>
+            <div class="terminal-body" id="terminalLogs">
+              <div class="log-line system">
+                <span class="log-ts">[00:00:00]</span>
+                <span class="log-text">Utkarsh Mandal LMS Engine v2.0 ready. Awaiting submission...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Complete Action Bar -->
+        <div class="action-bar hidden" id="actionBar">
+          <div class="congrats-box">
+            <span class="congrats-emoji">🏆</span>
+            <div>
+              <h4 id="congratsTitle">All 42 Problems Successfully Solved!</h4>
+              <p>Check your BMSCE LMS dashboard to see your updated leaderboard position.</p>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <a href="https://lms.bmsce.in/dashboard" target="_blank" rel="noopener noreferrer" class="lms-btn">
+              Open LMS Dashboard ↗
+            </a>
+            <button class="reset-btn" id="resetBtn">Run Again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Persistent Trademark Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <strong>Utkarsh Mandal™</strong> LMS Automation Platform
+      </div>
+      <div class="footer-text">
+        Designed & Architected by <strong>Utkarsh Mandal</strong> • BMSCE Computer Science & Engineering
+      </div>
+      <div class="footer-copy">
+        © 2026 Utkarsh Mandal. Original Intellectual Property. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
