@@ -1,0 +1,27 @@
+{
+  "name": "lms-ki-mkc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "login": "node login.js",
+    "login:debug": "set HEADLESS=false && node login.js",
+    "solve": "node solve.js",
+    "solve:debug": "set HEADLESS=false && node solve.js",
+    "solve-all": "node runner.js",
+    "solve:all": "node solve.js --all",
+    "start": "node runner.js",
+    "scrape": "node scrape-problems.js",
+    "build:json": "node build-solutions-json.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^18.0.8",
+    "groq-sdk": "^1.6.0",
+    "playwright": "^1.64.1"
+  }
+}

@@ -1,0 +1,6 @@
+# BMSCE LMS Competitive Coding Solutions
+# All 42 Python solutions run using standard Python 3 libraries (sys, json, math, collections)
+# No external pip dependencies are required to run the solutions.
+#
+# To run the automation runner, Node.js is used:
+#   npm run solve-all

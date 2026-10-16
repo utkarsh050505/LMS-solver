@@ -1,0 +1,221 @@
+{
+  "problems": [
+    {
+      "name": "Follow the FAT Chain",
+      "href": "/problems/os26-32-follow-the-fat-chain?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Warm-upBinary Search in Sorted Array5 min · easiest open",
+      "href": "/problems/qualcomm-binary-search-in-sorted-array-comb-0010?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "BossReverse Linked Listhardest you can reach",
+      "href": "/problems/reverse-linked-list?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Head in Order",
+      "href": "/problems/os26-31-head-in-order?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "The Lost Update",
+      "href": "/problems/os26-21-the-lost-update?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "The Mutex Trace Audit",
+      "href": "/problems/os26-22-mutex-trace-audit?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "The Fragmentation Audit",
+      "href": "/problems/os26-12-fragmentation-audit?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "The First-Fit Floorplan",
+      "href": "/problems/os26-11-first-fit-floorplan?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "The Shared Workshop Bench",
+      "href": "/problems/os26-03-round-robin-quantum?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "The Triage Bay",
+      "href": "/problems/os26-02-shortest-job-first-bay?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "The Service Desk Queue",
+      "href": "/problems/os26-01-fcfs-service-desk?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Price Ticker with O(1) Minimum",
+      "href": "/problems/ds26-10-price-ticker-with-o1-minimum?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Palindromic Packet Chain",
+      "href": "/problems/ds26-07-palindromic-packet-chain?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Balanced Shift Ledger",
+      "href": "/problems/ds26-03-balanced-shift-ledger?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Merge the Overflow Shelf",
+      "href": "/problems/ds26-01-merge-the-overflow-shelf?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Service Desk Rotation",
+      "href": "/problems/p26-b18-service-desk-rotation?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Ladder Routes",
+      "href": "/problems/p26-b17-ladder-routes?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Shift Ledger",
+      "href": "/problems/p26-b16-shift-ledger?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Binary Weight Audit",
+      "href": "/problems/p26-b14-binary-weight-audit?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Sensor Tape Compression",
+      "href": "/problems/p26-b13-sensor-run-length?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Warehouse Restock Signal",
+      "href": "/problems/p26-b11-restock-signal?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Palindromic Order Code",
+      "href": "/problems/p26-b07-palindromic-order-code?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "The Address Translation Desk",
+      "href": "/problems/os26-13-address-translation-desk?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Generate Balanced Parentheses",
+      "href": "/problems/cse-code-016-generate-balanced-parentheses?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Minimum Intervals to Remove",
+      "href": "/problems/cse-code-008-minimum-intervals-to-remove?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Count Missing Jewels in Range",
+      "href": "/problems/intuit-count-missing-jewels-in-range-comb-0706?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Minimum Replacements to Make Anagrams",
+      "href": "/problems/cse-code-004-minimum-replacements-to-make-anagrams?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Reverse Vowels in a String",
+      "href": "/problems/reverse-vowels-in-a-string?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Duplicate Listing Buckets",
+      "href": "/problems/ds26-02-duplicate-listing-buckets?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Maximum Supplies Within Credits",
+      "href": "/problems/maximum-supplies-within-credits?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Candidate with Maximum Votes",
+      "href": "/problems/adobe-candidate-with-maximum-votes-comb-0535?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Maximum Sum Pair",
+      "href": "/problems/amazon-maximum-sum-pair-comb-0409?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Hills and Valleys",
+      "href": "/problems/dll26-07-hills-and-valleys?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Trim the Sorted Chain",
+      "href": "/problems/dll26-06-trim-the-sorted-chain?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "How Far Apart",
+      "href": "/problems/dll26-05-how-far-apart?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Insert into the Sorted Chain",
+      "href": "/problems/dll26-04-insert-into-the-sorted-chain?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Move to Front on Access",
+      "href": "/problems/dll26-03-move-to-front-on-access?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Pull the K-th Wagon from the End",
+      "href": "/problems/sll26-02-pull-the-kth-wagon-from-the-end?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Halfway Stop on the Route",
+      "href": "/problems/sll26-01-halfway-stop-on-the-route?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Linked List Cycle Detection",
+      "href": "/problems/linked-list-cycle?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Binary Search",
+      "href": "/problems/binary-search?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    },
+    {
+      "name": "Delete All Nodes with a Given Value",
+      "href": "/problems/qualcomm-delete-all-nodes-with-given-value-comb-0008?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+    }
+  ],
+  "solveLinks": [
+    "/problems/os26-32-follow-the-fat-chain?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/os26-31-head-in-order?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/os26-21-the-lost-update?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/os26-22-mutex-trace-audit?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/os26-12-fragmentation-audit?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/os26-11-first-fit-floorplan?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/os26-03-round-robin-quantum?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/os26-02-shortest-job-first-bay?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/os26-01-fcfs-service-desk?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/ds26-10-price-ticker-with-o1-minimum?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/ds26-07-palindromic-packet-chain?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/ds26-03-balanced-shift-ledger?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/ds26-01-merge-the-overflow-shelf?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b18-service-desk-rotation?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b17-ladder-routes?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b16-shift-ledger?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b15-gear-alignment?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b14-binary-weight-audit?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b12-rotate-floor-plan?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b13-sensor-run-length?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b11-restock-signal?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b10-warehouse-stock-ledger?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b08-attendance-grid-totals?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/p26-b07-palindromic-order-code?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/os26-13-address-translation-desk?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/cse-code-016-generate-balanced-parentheses?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/cse-code-008-minimum-intervals-to-remove?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/intuit-count-missing-jewels-in-range-comb-0706?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/cse-code-004-minimum-replacements-to-make-anagrams?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/reverse-vowels-in-a-string?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/ds26-02-duplicate-listing-buckets?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/maximum-supplies-within-credits?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/adobe-candidate-with-maximum-votes-comb-0535?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/amazon-maximum-sum-pair-comb-0409?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/microsoft-rotate-array-right-by-k-comb-0361?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/dll26-07-hills-and-valleys?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/dll26-06-trim-the-sorted-chain?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/dll26-05-how-far-apart?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/dll26-04-insert-into-the-sorted-chain?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/dll26-03-move-to-front-on-access?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/sll26-02-pull-the-kth-wagon-from-the-end?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/sll26-01-halfway-stop-on-the-route?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/qualcomm-binary-search-in-sorted-array-comb-0010?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/linked-list-cycle?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/reverse-linked-list?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/binary-search?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive",
+    "/problems/qualcomm-delete-all-nodes-with-given-value-comb-0008?courseId=cmukqulxo07b92iuftcmscwzy&returnTo=%2Fcourses%2Fcompetitive-coding%2Fcompetitive"
+  ]
+}
