@@ -40,14 +40,17 @@ The script then logs in, navigates to each problem, pastes the verified solution
 
 ### 🔑 "Sign in with Google" (OAuth) users
 
-If you normally open the LMS with **Sign in with Google**, use the command line (the website can't do Google login — see below):
+If you normally open the LMS with **Sign in with Google**, use the command line (the website can't do Google login — see below). Two steps:
 
 ```bash
-npm run login:google   # opens a browser; log in with Google yourself, once
-npm run solve:google   # solves everything using that session
+npm run login:google   # 1) opens a browser — log in with Google yourself (once)
+npm run solve:google   # 2) solves all 70 using that saved session (no re-login)
 ```
 
-`login:google` opens a real browser and waits for *you* to complete the Google login. Nothing about your Google account is asked for, seen, or saved by this tool — only the LMS session cookie it produces.
+- `login:google` opens a real browser and waits for *you* to finish the Google login. Nothing about your Google account is asked for, seen, or saved — only the LMS session it produces.
+- `solve:google` reuses that saved session and submits every problem. It never re-opens the browser. If the session has expired, it tells you to run `npm run login:google` again.
+
+> Prefer one command? `npm run solve:google:login` opens the browser to log in *and* then solves all 70 in a single step.
 
 ---
 

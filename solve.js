@@ -4,6 +4,7 @@
 
 const { chromium } = require("playwright");
 const Groq = require("groq-sdk");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
@@ -18,7 +19,7 @@ const {
   solutionsMetadata,
   syncToProblems,
 } = require("./problem-store");
-const { promptCredentials, promptEmail } = require("./credentials");
+const { promptCredentials } = require("./credentials");
 dotenv.config();
 
 // ─── Config ────────────────────────────────────────────────
@@ -246,12 +247,59 @@ async function manualLogin() {
     fs.writeFileSync(SESSION_FILE, JSON.stringify(cookies, null, 2));
     log("✅ Logged in — session saved. You can close the browser window.");
 
-    const email = await promptEmail();
-    credentials = { email, manual: true };
-    return email;
+    // No email/password is ever asked; the per-account key is derived from the
+    // saved LMS session token so progress tracking still works.
+    credentials = { email: sessionAccountKey(), manual: true };
+    return credentials.email;
   } finally {
     await browser.close().catch(() => {});
   }
+}
+
+// A stable, non-identifying key for the saved session (hash of the LMS session
+// token). Used to tag results per login without ever asking for an email.
+function sessionAccountKey() {
+  try {
+    const cookies = JSON.parse(fs.readFileSync(SESSION_FILE, "utf-8"));
+    const tok = cookies.find((c) => /session-token/i.test(c.name) && c.value);
+    if (tok) return "google:" + crypto.createHash("sha256").update(tok.value).digest("hex").slice(0, 12);
+  } catch (e) {}
+  return "google:session";
+}
+
+// Quick auth probe: does the saved session still log us in?
+async function sessionIsValid() {
+  if (!fs.existsSync(SESSION_FILE)) return false;
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const context = await browser.newContext({ bypassCSP: true, userAgent: USER_AGENT });
+    await context.addCookies(JSON.parse(fs.readFileSync(SESSION_FILE, "utf-8")));
+    const page = await context.newPage();
+    await page.goto(`${LMS_BASE}/courses/competitive-coding/competitive`, {
+      waitUntil: "domcontentloaded",
+      timeout: 45000,
+    });
+    await page.waitForTimeout(1500);
+    return !page.url().includes("/login") && !(await page.$('input[type="password"]'));
+  } catch (e) {
+    return false;
+  } finally {
+    await browser.close().catch(() => {});
+  }
+}
+
+// Solve using the session saved earlier by `login:google` — no browser re-open.
+async function useSavedSession() {
+  if (!fs.existsSync(SESSION_FILE)) {
+    throw new Error("No saved session found. Run `npm run login:google` first to log in with Google.");
+  }
+  log("Checking your saved LMS session...");
+  if (!(await sessionIsValid())) {
+    throw new Error("Your saved session has expired. Run `npm run login:google` again, then retry.");
+  }
+  credentials = { email: sessionAccountKey(), manual: true };
+  log("✅ Using your saved Google login — no re-login needed.");
+  return credentials.email;
 }
 
 async function ensureAuthenticated(page) {
@@ -707,10 +755,20 @@ async function main() {
   const args = process.argv.slice(2);
   require("./banner").printBanner();
 
-  // Google / "Sign in with Google" users: --google (or --session) opens a visible
-  // browser to log in by hand, so no password is ever typed into this tool.
-  const useGoogle = args.includes("--google") || args.includes("--manual") || args.includes("--session");
-  const account = (useGoogle ? await manualLogin() : await login()).toLowerCase();
+  // Login mode:
+  //   --use-session : reuse the session saved by `login:google` (no browser re-open)
+  //   --google      : open a visible browser to log in by hand (incl. "Sign in with Google")
+  //   (default)     : ask for email + password
+  // No password is ever typed into this tool in the first two modes.
+  let account;
+  if (args.includes("--use-session")) {
+    account = await useSavedSession();
+  } else if (args.includes("--google") || args.includes("--manual")) {
+    account = await manualLogin();
+  } else {
+    account = await login();
+  }
+  account = account.toLowerCase();
 
   // --scrape: refresh problems.json from the course page first (re-indexes the cache too)
   if (args.includes("--scrape")) {
@@ -793,6 +851,9 @@ async function main() {
 module.exports = {
   login,
   manualLogin,
+  useSavedSession,
+  sessionIsValid,
+  sessionAccountKey,
   currentAccount,
   performLogin,
   ensureAuthenticated,

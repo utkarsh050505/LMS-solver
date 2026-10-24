@@ -67,7 +67,11 @@ printf "yourname.cs24@bmsce.ac.in\nyour_password\n" | node solve.js --all
 
 `results.json` records the `account` for every verdict, so "already Accepted" skipping is per account — a different student's run re-submits everything for their account.
 
-**Google / "Sign in with Google" users.** Add `--google` (alias `--session`/`--manual`) to open a *visible* browser so the student completes login by hand (`npm run login:google`, `npm run solve:google`; `runner.js` offers it as choice 2). This tool never asks for, sees or stores a Google password — it only keeps the LMS session cookie the real login produces (`manualLogin()` in `solve.js`). Because that session has no password, it can't silently re-login if it expires mid-run: `performLogin()` throws a "run `npm run login:google` again" message instead. The **web app is deliberately email+password only** — a hosted server must never collect Google passwords (that is the phishing pattern, and Google blocks scripted logins regardless).
+**Google / "Sign in with Google" users.** Login modes on `solve.js`:
+- `--google` / `--manual`: open a *visible* browser so the student logs in by hand (`manualLogin()` in `solve.js`). The session is saved to `session/cookies.json`.
+- `--use-session`: reuse that saved session with no browser re-open (`useSavedSession()`), after a quick `sessionIsValid()` auth probe.
+
+Recommended two-step flow: `npm run login:google` (= `login.js --google`), then `npm run solve:google` (= `solve.js --all --use-session`). One-shot: `npm run solve:google:login` (= `solve.js --all --google`). `runner.js` offers Google as choice 2. The per-account key for a Google login is `sessionAccountKey()` — a hash of the LMS session token — so progress tracking works without ever asking for an email. This tool never asks for, sees or stores a Google password; it only keeps the LMS session the real login produces. That session has no password, so it can't silently re-login if it expires mid-run: `performLogin()` throws a "run `npm run login:google` again" message. The **web app is deliberately email+password only** — a hosted server must never collect Google passwords (that is the phishing pattern, and Google blocks scripted logins regardless).
 
 The `.env` file only holds API settings:
 ```env
