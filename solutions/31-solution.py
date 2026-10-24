@@ -1,21 +1,31 @@
 import sys
 
-def main():
-    data = sys.stdin.read().split()
+def solve():
+    data = sys.stdin.buffer.read().split()
     if not data:
         return
-    n = int(data[0])
-    nums = list(map(int, data[1:1 + n]))
-    max1 = -10**19
-    max2 = -10**19
-    for x in nums:
-        if x > max1:
-            max2 = max1
-            max1 = x
-        elif x > max2:
-            max2 = x
-    total = max1 + max2
-    sys.stdout.write(f"{total}\n{max1} {max2}")
+    it = iter(data)
+    P = int(next(it))
+    n = int(next(it))
+    q = int(next(it))
+    frames = [int(next(it)) for _ in range(n)]
+    limit = n * P
+    mask = P - 1
+    shift = P.bit_length() - 1  # since P is power of two
+    out_lines = []
+    for _ in range(q):
+        a = int(next(it))
+        if a >= limit:
+            out_lines.append("SEGV")
+        else:
+            page = a >> shift
+            offset = a & mask
+            f = frames[page]
+            if f == -1:
+                out_lines.append(f"FAULT {page}")
+            else:
+                out_lines.append(str(f * P + offset))
+    sys.stdout.write("\n".join(out_lines))
 
 if __name__ == "__main__":
-    main()
+    solve()

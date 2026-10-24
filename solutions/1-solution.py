@@ -1,28 +1,37 @@
 import sys
 
-def solve():
+def main():
     data = sys.stdin.read().split()
     if not data:
         return
-    it = iter(data)
-    n = int(next(it))
-    arr = [int(next(it)) for _ in range(n)]
-    try:
-        x = int(next(it))
-    except StopIteration:
-        x = None
-    lo, hi = 0, n - 1
-    ans = -1
-    while lo <= hi:
-        mid = (lo + hi) // 2
-        if arr[mid] == x:
-            ans = mid
-            break
-        elif arr[mid] < x:
-            lo = mid + 1
-        else:
-            hi = mid - 1
-    sys.stdout.write(str(ans))
+    cap = int(data[0])
+    q = int(data[1])
+    out = []
+    stack = []
+    i = 2
+    while i < len(data):
+        op = data[i]
+        i += 1
+        if op == "PUSH":
+            x = data[i]
+            i += 1
+            if len(stack) >= cap:
+                out.append("FULL")
+            else:
+                stack.append(x)
+        elif op == "POP":
+            if stack:
+                out.append(stack.pop())
+            else:
+                out.append("EMPTY")
+        elif op == "TOP":
+            if stack:
+                out.append(stack[-1])
+            else:
+                out.append("EMPTY")
+        elif op == "SIZE":
+            out.append(str(len(stack)))
+    sys.stdout.write("\n".join(out))
 
 if __name__ == "__main__":
-    solve()
+    main()

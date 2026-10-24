@@ -1,18 +1,25 @@
-import json, sys
-from collections import Counter
+import sys
 
-def min_anagram_replacements(payload):
-    s = payload.get("s", "")
-    t = payload.get("t", "")
-    cs = Counter(s)
-    ct = Counter(t)
-    replacements = 0
-    for ch, cnt in cs.items():
-        deficit = cnt - ct.get(ch, 0)
-        if deficit > 0:
-            replacements += deficit
-    return replacements
+def main():
+    data = sys.stdin.read().strip().split()
+    if not data:
+        return
+    s = data[0]
+    if not s:
+        print()
+        return
+    res = []
+    cur = s[0]
+    cnt = 1
+    for ch in s[1:]:
+        if ch == cur:
+            cnt += 1
+        else:
+            res.append(f"{cur}{cnt}")
+            cur = ch
+            cnt = 1
+    res.append(f"{cur}{cnt}")
+    sys.stdout.write(''.join(res))
 
 if __name__ == "__main__":
-    payload = json.loads(sys.stdin.read() or "{}")
-    print(json.dumps(min_anagram_replacements(payload), separators=(",", ":")))
+    main()

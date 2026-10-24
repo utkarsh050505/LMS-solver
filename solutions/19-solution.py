@@ -1,25 +1,25 @@
 import sys
 
 def main():
-    data = sys.stdin.read().strip().split()
+    data = sys.stdin.buffer.read().split()
     if not data:
         return
-    s = data[0]
-    if not s:
-        print()
-        return
-    res = []
-    cur = s[0]
-    cnt = 1
-    for ch in s[1:]:
-        if ch == cur:
-            cnt += 1
+    n = int(data[0]); m = int(data[1])
+    shelf = [int(x) for x in data[2:2 + n]]
+    tray = [int(x) for x in data[2 + n:2 + n + m]]
+    shelf.extend([0] * m)
+    i = n - 1
+    j = m - 1
+    write = n + m - 1
+    while j >= 0:
+        if i >= 0 and shelf[i] > tray[j]:
+            shelf[write] = shelf[i]
+            i -= 1
         else:
-            res.append(f"{cur}{cnt}")
-            cur = ch
-            cnt = 1
-    res.append(f"{cur}{cnt}")
-    sys.stdout.write(''.join(res))
+            shelf[write] = tray[j]
+            j -= 1
+        write -= 1
+    sys.stdout.write(' '.join(map(str, shelf)))
 
 if __name__ == "__main__":
     main()

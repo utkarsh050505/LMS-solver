@@ -6,110 +6,18 @@ const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
 const { execSync } = require("child_process");
+const { loadProblems, loadResults, isAccepted, syncToProblems } = require("./problem-store");
 
-const ENV_FILE = path.join(__dirname, ".env");
 const SOLUTIONS_JSON = path.join(__dirname, "solutions.json");
-const SESSION_FILE = path.join(__dirname, "session", "cookies.json");
-const RESULTS_FILE = path.join(__dirname, "results.json");
 
-// ─── Interactive Prompt Helpers ─────────────────────────────
-function askQuestion(query, hidden = false) {
+function askLine(query) {
   return new Promise((resolve) => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    rl.question(query, (ans) => {
+      rl.close();
+      resolve(ans.trim());
     });
-
-    if (!hidden) {
-      rl.question(query, (ans) => {
-        rl.close();
-        resolve(ans.trim());
-      });
-    } else {
-      process.stdout.write(query);
-      let input = "";
-      if (process.stdin.isTTY) {
-        process.stdin.setRawMode(true);
-        process.stdin.resume();
-        process.stdin.setEncoding("utf8");
-
-        const onData = (ch) => {
-          if (ch === "\n" || ch === "\r" || ch === "\u0004") {
-            process.stdin.setRawMode(false);
-            process.stdin.pause();
-            process.stdin.removeListener("data", onData);
-            process.stdout.write("\n");
-            rl.close();
-            resolve(input.trim());
-          } else if (ch === "\u0003") {
-            // Ctrl+C
-            process.exit();
-          } else if (ch === "\u0008" || ch === "\x7f") {
-            // Backspace
-            if (input.length > 0) {
-              input = input.slice(0, -1);
-              process.stdout.write("\b \b");
-            }
-          } else {
-            input += ch;
-            process.stdout.write("*");
-          }
-        };
-
-        process.stdin.on("data", onData);
-      } else {
-        // Fallback for non-TTY
-        rl.question("", (ans) => {
-          rl.close();
-          resolve(ans.trim());
-        });
-      }
-    }
   });
-}
-
-// ─── Environment Management ────────────────────────────────
-function readEnv() {
-  if (!fs.existsSync(ENV_FILE)) return {};
-  const content = fs.readFileSync(ENV_FILE, "utf-8");
-  const env = {};
-  content.split("\n").forEach((line) => {
-    const parts = line.split("=");
-    if (parts.length >= 2) {
-      const key = parts[0].trim();
-      const val = parts.slice(1).join("=").trim();
-      if (key && !key.startsWith("#")) env[key] = val;
-    }
-  });
-  return env;
-}
-
-function writeEnv(envMap) {
-  let lines = [];
-  if (fs.existsSync(ENV_FILE)) {
-    lines = fs.readFileSync(ENV_FILE, "utf-8").split("\n");
-  }
-
-  const updatedKeys = new Set();
-  const newLines = lines.map((line) => {
-    const parts = line.split("=");
-    if (parts.length >= 2) {
-      const key = parts[0].trim();
-      if (envMap[key] !== undefined) {
-        updatedKeys.add(key);
-        return `${key}=${envMap[key]}`;
-      }
-    }
-    return line;
-  });
-
-  for (const key in envMap) {
-    if (!updatedKeys.has(key)) {
-      newLines.push(`${key}=${envMap[key]}`);
-    }
-  }
-
-  fs.writeFileSync(ENV_FILE, newLines.join("\n").trim() + "\n", "utf-8");
 }
 
 // ─── Step 1: Ensure Dependencies & Playwright Browser ──────
@@ -135,68 +43,16 @@ async function ensureSetup() {
   console.log("✅ Dependencies & browser are ready!\n");
 }
 
-// ─── Step 2: Prompt for User Credentials ────────────────────
-async function ensureCredentials() {
-  console.log("⚡ Built by Utkarsh\n");
-
-  const currentEnv = readEnv();
-  let email = currentEnv.LMS_EMAIL;
-  let password = currentEnv.LMS_PASSWORD;
-
-  if (email && password && !email.includes("your-email")) {
-    console.log(`👤 Found saved account: ${email}`);
-    const choice = await askQuestion("   Use this account? (Y/n): ");
-    if (choice.toLowerCase() === "n") {
-      email = null;
-      password = null;
-    }
-  } else {
-    email = null;
-    password = null;
-  }
-
-  if (!email || !password) {
-    console.log("⚡ Built by Utkarsh");
-    console.log("🔑 Please enter your BMSCE LMS login details:");
-    console.log("   (Your password will be masked with * and saved locally in .env)\n");
-
-    email = await askQuestion("📧 BMSCE Email: ");
-    while (!email || !email.includes("@")) {
-      console.log("   ⚠️ Please enter a valid email address!");
-      email = await askQuestion("📧 BMSCE Email: ");
-    }
-
-    password = await askQuestion("🔒 LMS Password: ", true);
-    while (!password) {
-      console.log("   ⚠️ Password cannot be empty!");
-      password = await askQuestion("🔒 LMS Password: ", true);
-    }
-
-    writeEnv({ LMS_EMAIL: email, LMS_PASSWORD: password });
-    // Clear old cookies to ensure fresh login
-    if (fs.existsSync(SESSION_FILE)) fs.unlinkSync(SESSION_FILE);
-    // Clear old results for the new user
-    if (fs.existsSync(RESULTS_FILE)) fs.unlinkSync(RESULTS_FILE);
-
-    console.log("✅ Credentials saved!\n");
-  }
-
-  // Inject into process.env
-  process.env.LMS_EMAIL = email;
-  process.env.LMS_PASSWORD = password;
-}
-
 // ─── Main Execution Pipeline ────────────────────────────────
 async function main() {
   console.clear();
   console.log("╔════════════════════════════════════════════════════════════╗");
   console.log("║         🚀 BMSCE LMS COMPETITIVE CODING AUTO-SOLVER        ║");
-  console.log("║        Automated solver with 42 Verified 100% Solutions    ║");
+  console.log("║        Automated solver with verified cached solutions     ║");
   console.log("║                    ⚡ Built by Utkarsh                     ║");
   console.log("╚════════════════════════════════════════════════════════════╝\n");
 
   await ensureSetup();
-  await ensureCredentials();
 
   // Verify solutions.json exists
   if (!fs.existsSync(SOLUTIONS_JSON)) {
@@ -204,22 +60,28 @@ async function main() {
     require("./build-solutions-json").buildSolutionsJson();
   }
 
-  const { solveProblem } = require("./solve");
-  const problemsData = JSON.parse(fs.readFileSync(path.join(__dirname, "problems.json"), "utf-8"));
-  const problems = problemsData.problems;
+  // Step 2: Log in (credentials are used once and never saved)
+  console.log("⚡ Built by Utkarsh\n");
+  const { login, manualLogin, solveProblem, getCachedSolution } = require("./solve");
+  console.log("How do you log in to the LMS?");
+  console.log("  1) Email + password");
+  console.log('  2) "Sign in with Google" (opens a browser; your Google password stays with Google)\n');
+  const choice = (await askLine("Enter 1 or 2: ")).trim();
+  const account = (choice === "2" ? await manualLogin() : await login()).toLowerCase();
 
-  console.log(`\n📋 Loaded ${problems.length} problems with pre-verified solutions.`);
-  console.log(`⚡ Zero Groq API tokens needed — everything runs from local cache!`);
+  syncToProblems();
+  const problems = loadProblems();
+  const uncached = problems.filter((p, i) => !getCachedSolution(i, p.href)).length;
+
+  console.log(`\n📋 Loaded ${problems.length} problems (${problems.length - uncached} with pre-verified solutions).`);
+  if (uncached === 0) {
+    console.log(`⚡ Zero Groq API tokens needed — everything runs from local cache!`);
+  } else {
+    console.log(`🌐 ${uncached} problem(s) have no cached solution and will be generated with Groq (needs GROQ_API_KEY).`);
+  }
   console.log(`🏁 Starting automatic submission process...\n`);
 
-  let existingResults = [];
-  if (fs.existsSync(RESULTS_FILE)) {
-    try {
-      existingResults = JSON.parse(fs.readFileSync(RESULTS_FILE, "utf-8"));
-    } catch (e) {
-      existingResults = [];
-    }
-  }
+  const existingResults = loadResults();
 
   let passed = 0;
   let skipped = 0;
@@ -227,9 +89,7 @@ async function main() {
 
   for (let i = 0; i < problems.length; i++) {
     const prob = problems[i];
-    const alreadyAccepted = existingResults.find(
-      (r) => (r.index === i || r.url === prob.href) && r.result === "Accepted"
-    );
+    const alreadyAccepted = isAccepted(existingResults, prob.href, account);
 
     const padName = prob.name.padEnd(38, ".");
     const progressTag = `[${String(i + 1).padStart(2, " ")}/${problems.length}]`;
@@ -276,6 +136,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("Fatal Error:", err);
+  console.error("Fatal Error:", err.message || err);
   process.exit(1);
 });

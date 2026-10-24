@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BMSCE LMS Auto-Solver | Powered by UM</title>
-  <meta name="description" content="Automated solver for all 42 BMSCE LMS Competitive Coding problems. Powered by Project UM.">
+  <meta name="referrer" content="no-referrer">
+  <title>LMS Auto-Solver</title>
+  <meta name="description" content="Submit verified solutions to every BMSCE LMS competitive coding problem with just your LMS login.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -29,13 +30,11 @@
         </div>
       </div>
 
-      <!-- Prominent Trademark Pill -->
-      <div class="trademark-pill" title="Original creator and system architect">
+      <a class="trademark-pill hire-pill" href="https://github.com/utkarsh050505" target="_blank" rel="noopener noreferrer">
         <span class="pulse-dot"></span>
-        <span class="trademark-label">ARCHITECT:</span>
-        <span class="trademark-name">Project UM™</span>
-        <span class="verified-icon">✓</span>
-      </div>
+        <span class="trademark-name">Don't vibe code. Hire me</span>
+        <span class="verified-icon">↗</span>
+      </a>
     </div>
   </header>
 
@@ -43,124 +42,83 @@
   <main class="main-container">
     <!-- Hero Header -->
     <section class="hero-section">
-      <div class="creator-tag">
-        <span>⚡ POWERED BY PROJECT UM ENGINE</span>
-      </div>
       <h1 class="hero-title">
-        Solve All <span class="gradient-text">42 LMS Problems</span> in One Click
+        Solve all <span class="gradient-text"><span id="heroCount">70</span> LMS problems</span> in one click
       </h1>
       <p class="hero-desc">
-        Automated AI-powered test execution with <strong>100% verified solutions</strong>, direct Monaco editor injection, and zero manual coding. Enter your LMS credentials to submit.
+        Enter your BMSCE LMS email and password. That's it — the solver signs in, submits a verified solution to every problem, and shows you each verdict live.
       </p>
-
-      <div class="stats-ribbon">
-        <div class="stat-item">
-          <span class="stat-num">42 / 42</span>
-          <span class="stat-lbl">Accepted Solutions</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-num">+1,050</span>
-          <span class="stat-lbl">Total XP Earned</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-num">100%</span>
-          <span class="stat-lbl">Success Rate</span>
-        </div>
-      </div>
     </section>
 
     <!-- App Viewport -->
     <div class="app-viewport">
-      <!-- Input Card (Step 1) -->
+      <!-- Login Card -->
       <div class="card glass-card input-card" id="inputCard">
         <div class="card-header">
           <div class="card-title-group">
-            <span class="step-badge">STEP 1</span>
-            <h2>Enter LMS Credentials</h2>
+            <h2>Sign in with your LMS account</h2>
           </div>
-          <span class="security-badge">🔒 Direct LMS Session</span>
+          <span class="security-badge">🔒 Never stored</span>
         </div>
 
         <form id="solveForm" class="solve-form">
           <div class="form-group">
-            <label for="emailInput">BMSCE Email Address</label>
+            <label for="emailInput">BMSCE Email</label>
             <div class="input-wrapper">
               <span class="input-icon">📧</span>
-              <input 
-                type="email" 
-                id="emailInput" 
-                placeholder="yourname.cs24@bmsce.ac.in" 
+              <input
+                type="email"
+                id="emailInput"
+                placeholder="yourname.cs24@bmsce.ac.in"
                 required
-                autocomplete="email"
+                maxlength="254"
+                autocomplete="username"
+                spellcheck="false"
               >
             </div>
-            <small class="hint">Use your official college email linked to LMS</small>
           </div>
 
           <div class="form-group">
             <label for="passwordInput">LMS Password</label>
             <div class="input-wrapper">
               <span class="input-icon">🔒</span>
-              <input 
-                type="password" 
-                id="passwordInput" 
-                placeholder="••••••••••••" 
+              <input
+                type="password"
+                id="passwordInput"
+                placeholder="••••••••••••"
                 required
+                maxlength="256"
                 autocomplete="current-password"
               >
-              <button type="button" class="toggle-pwd-btn" id="togglePwdBtn" aria-label="Toggle password visibility">
+              <button type="button" class="toggle-pwd-btn" id="togglePwdBtn" aria-label="Show password">
                 👁️
               </button>
             </div>
-            <small class="hint">Credentials are transmitted directly to your local LMS session</small>
           </div>
 
-          <div class="form-group">
-            <label>Execution Mode</label>
-            <div class="mode-selector">
-              <label class="mode-option active">
-                <input type="radio" name="targetMode" value="all" checked>
-                <div class="mode-content">
-                  <span class="mode-title">Solve All 42 Problems</span>
-                  <span class="mode-sub">Full batch submission (+1050 XP)</span>
-                </div>
-                <span class="check-mark">✓</span>
-              </label>
-
-              <label class="mode-option">
-                <input type="radio" name="targetMode" value="0">
-                <div class="mode-content">
-                  <span class="mode-title">Test Run (Problem 1 Only)</span>
-                  <span class="mode-sub">Follow the FAT Chain verification</span>
-                </div>
-                <span class="check-mark">✓</span>
-              </label>
-            </div>
-          </div>
+          <p class="form-error hidden" id="formError" role="alert"></p>
 
           <button type="submit" class="submit-btn" id="startBtn">
             <span class="btn-glow"></span>
-            <span class="btn-text">🚀 Launch Auto-Solver</span>
+            <span class="btn-text">🚀 Solve everything</span>
           </button>
         </form>
 
         <div class="author-attribution">
-          <span>Engineered with precision by <strong>UM</strong> • Autonomous Systems</span>
+          Your password is used once to sign in to lms.bmsce.in and is never saved or logged.
         </div>
       </div>
 
-      <!-- Execution Dashboard (Step 2 - Initially Hidden) -->
+      <!-- Execution Dashboard (Initially Hidden) -->
       <div class="card glass-card dashboard-card hidden" id="dashboardCard">
         <div class="card-header">
           <div class="card-title-group">
             <span class="live-dot"></span>
-            <h2>Active Solving Session</h2>
+            <h2>Your Solving Session</h2>
           </div>
           <div class="header-badges">
-            <span class="xp-badge" id="xpCounter">+0 XP</span>
-            <span class="status-pill status-running" id="sessionStatus">RUNNING</span>
+            <span class="xp-badge" id="acceptedBadge">0 accepted</span>
+            <span class="status-pill status-queued" id="sessionStatus">STARTING</span>
           </div>
         </div>
 
@@ -168,8 +126,8 @@
         <div class="progress-section">
           <div class="progress-info">
             <div class="progress-stats">
-              <span class="progress-label">Problems Completed</span>
-              <span class="progress-count"><strong id="solvedCount">0</strong> / <span id="totalCount">42</span></span>
+              <span class="progress-label">Problems Submitted</span>
+              <span class="progress-count"><strong id="solvedCount">0</strong> / <span id="totalCount">0</span></span>
             </div>
             <span class="progress-percent" id="progressPercent">0%</span>
           </div>
@@ -180,18 +138,14 @@
 
         <!-- Dual Column: Problem Grid + Terminal Log -->
         <div class="dashboard-grid">
-          <!-- Problem Cards Grid -->
           <div class="problems-container">
             <div class="container-header">
               <h3>Problem Pipeline</h3>
-              <span class="chip" id="gridCounter">0 / 42 Solved</span>
+              <span class="chip" id="gridCounter">0 / 0 Accepted</span>
             </div>
-            <div class="problems-grid" id="problemsGrid">
-              <!-- Dynamically populated 42 problem pills -->
-            </div>
+            <div class="problems-grid" id="problemsGrid"></div>
           </div>
 
-          <!-- Live Terminal Output -->
           <div class="terminal-container">
             <div class="terminal-header">
               <div class="terminal-dots">
@@ -202,22 +156,17 @@
               <span class="terminal-title">um-solver@terminal:~$</span>
               <button class="terminal-clear-btn" id="clearLogsBtn">Clear</button>
             </div>
-            <div class="terminal-body" id="terminalLogs">
-              <div class="log-line system">
-                <span class="log-ts">[00:00:00]</span>
-                <span class="log-text">UM Automation Engine v2.0 ready. Awaiting submission...</span>
-              </div>
-            </div>
+            <div class="terminal-body" id="terminalLogs"></div>
           </div>
         </div>
 
-        <!-- Complete Action Bar -->
+        <!-- Finish Action Bar -->
         <div class="action-bar hidden" id="actionBar">
           <div class="congrats-box">
-            <span class="congrats-emoji">🏆</span>
+            <span class="congrats-emoji" id="congratsEmoji">🏆</span>
             <div>
-              <h4 id="congratsTitle">All 42 Problems Successfully Solved!</h4>
-              <p>Check your BMSCE LMS dashboard to see your updated leaderboard position.</p>
+              <h4 id="congratsTitle">Run complete!</h4>
+              <p>Check your BMSCE LMS dashboard to see your updated progress.</p>
             </div>
           </div>
           <div class="action-buttons">
@@ -231,17 +180,16 @@
     </div>
   </main>
 
-  <!-- Persistent Trademark Footer -->
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-brand">
         <strong>Project UM™</strong> LMS Automation Platform
       </div>
       <div class="footer-text">
-        Engineered by <strong>UM</strong> • Autonomous Competitive Coding Suite
+        <a href="https://github.com/utkarsh050505" target="_blank" rel="noopener noreferrer">Don't vibe code — hire me ↗</a>
       </div>
       <div class="footer-copy">
-        © 2026 Project UM. All Rights Reserved.
+        Not affiliated with BMSCE. © 2026 Project UM.
       </div>
     </div>
   </footer>

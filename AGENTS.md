@@ -10,6 +10,9 @@ npm run solve
 # Solve all problems (auto-resumes and skips already accepted)
 npm run solve:all
 
+# New problems dropped: re-scrape the course, then solve all
+npm run solve:new
+
 # Specific problem (e.g. problem 2)
 node solve.js 2
 ```

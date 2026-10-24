@@ -1,13 +1,24 @@
 import sys
 
-def solve():
+def main():
     data = sys.stdin.read().split()
     if not data:
         return
     n = int(data[0])
-    pos = int(data[1]) if len(data) > 1 else -1
-    # No need to process node values
-    sys.stdout.write("true" if pos >= 0 else "false")
+    names = data[1:1 + n]
+
+    freq = {}
+    for name in names:
+        freq[name] = freq.get(name, 0) + 1
+
+    best_name = None
+    best_count = -1
+    for name, cnt in freq.items():
+        if cnt > best_count or (cnt == best_count and name < best_name):
+            best_name = name
+            best_count = cnt
+
+    sys.stdout.write(f"{best_name} {best_count}")
 
 if __name__ == "__main__":
-    solve()
+    main()

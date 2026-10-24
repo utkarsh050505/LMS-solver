@@ -5,6 +5,7 @@ const { chromium } = require("playwright");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
+const { promptCredentials } = require("./credentials");
 
 dotenv.config();
 
@@ -28,13 +29,7 @@ function log(msg) {
 
 // ─── Main ──────────────────────────────────────────────────
 async function login() {
-  const email = process.env.LMS_EMAIL;
-  const password = process.env.LMS_PASSWORD;
-
-  if (!email || !password) {
-    console.error("❌ Missing credentials! Set LMS_EMAIL and LMS_PASSWORD in .env");
-    process.exit(1);
-  }
+  const { email, password } = await promptCredentials();
 
   ensureDir(SESSION_DIR);
   ensureDir(SCREENSHOT_DIR);
@@ -136,4 +131,15 @@ async function login() {
   }
 }
 
-login();
+if (process.argv.includes("--manual") || process.argv.includes("--google")) {
+  // Visible-browser login for "Sign in with Google" users (no password handled here)
+  require("./solve")
+    .manualLogin()
+    .then(() => process.exit(0))
+    .catch((e) => {
+      console.error(`❌ ${e.message}`);
+      process.exit(1);
+    });
+} else {
+  login();
+}

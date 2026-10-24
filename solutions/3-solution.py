@@ -5,27 +5,33 @@ def main():
     if not data:
         return
     n = int(data[0])
-    head = int(data[1])
-    # disk size not needed for computation
-    # cyl = int(data[2])
-    reqs = list(map(int, data[3:3 + n]))
-    total = 0
-    reversals = 0
-    last_dir = None  # +1 for up, -1 for down
-    cur = head
-    for r in reqs:
-        diff = r - cur
-        if diff != 0:
-            total += abs(diff)
-            dir_sign = 1 if diff > 0 else -1
-            if last_dir is not None and dir_sign != last_dir:
-                reversals += 1
-            last_dir = dir_sign
-        # if diff == 0, no movement, no direction change, skip
-        cur = r
-    # In case there were zero moves only, total already 0
-    print(total)
-    print(reversals)
+    a = [int(x) for x in data[1:1 + n]]
+    original = a[:]  # keep for sorting later
+
+    if n == 0:
+        print()
+        print()
+        print()
+        return
+
+    pivot = a[-1]
+    i = -1
+    for j in range(n - 1):
+        if a[j] <= pivot:
+            i += 1
+            a[i], a[j] = a[j], a[i]
+    i += 1
+    a[i], a[-1] = a[-1], a[i]
+
+    pivot_index = i
+    sorted_arr = sorted(original)
+
+    out_lines = [
+        str(pivot_index),
+        ' '.join(map(str, a)),
+        ' '.join(map(str, sorted_arr))
+    ]
+    sys.stdout.write('\n'.join(out_lines))
 
 if __name__ == "__main__":
     main()

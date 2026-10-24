@@ -1,0 +1,12 @@
+# Secrets and personal data must never end up in the image
+.env
+.env.*
+session/
+screenshots/
+results.json
+
+# Not needed at runtime
+node_modules/
+.git/
+.claude/
+*.log

@@ -1,52 +1,44 @@
-import sys, heapq
+import sys
 
 def main():
     data = sys.stdin.read().split()
     if not data:
         return
-    it = iter(data)
-    n = int(next(it))
-    procs = []
-    for idx in range(n):
-        pid = next(it)
-        arrival = int(next(it))
-        burst = int(next(it))
-        procs.append((pid, arrival, burst, idx))
-    procs_by_arrival = sorted(procs, key=lambda x: (x[1], x[3]))
-    heap = []
-    i = 0
-    time = 0
-    completed = 0
-    completion = [0] * n
-    turnaround = [0] * n
-    waiting = [0] * n
-    while completed < n:
-        while i < n and procs_by_arrival[i][1] <= time:
-            pid, arr, burst, idx = procs_by_arrival[i]
-            heapq.heappush(heap, (burst, arr, idx, pid))
-            i += 1
-        if heap:
-            burst, arr, idx, pid = heapq.heappop(heap)
-            comp = time + burst
-            completion[idx] = comp
-            turnaround[idx] = comp - arr
-            waiting[idx] = turnaround[idx] - burst
-            time = comp
-            completed += 1
+    idx = 0
+    T = int(data[idx]); x = int(data[idx + 1]); idx += 2
+    progs = []
+    for _ in range(T):
+        k = int(data[idx]); idx += 1
+        progs.append(data[idx:idx + k])
+        idx += k
+    m = int(data[idx]); idx += 1
+    schedule = list(map(int, data[idx:idx + m]))
+
+    pc = [0] * T
+    reg = [0] * T
+    load_step = [-1] * T
+    last_store_of_thread = [-1] * T
+    stale_cnt = 0
+    step = 0
+
+    for th in schedule:
+        step += 1
+        t = th - 1
+        instr = progs[t][pc[t]]
+        pc[t] += 1
+        if instr == 'L':
+            reg[t] = x
+            load_step[t] = step
+        elif instr == 'S':
+            stale = any(last_store_of_thread[j] > load_step[t] for j in range(T) if j != t)
+            if stale:
+                stale_cnt += 1
+            x = reg[t]
+            last_store_of_thread[t] = step
         else:
-            time = procs_by_arrival[i][1]
-    out = []
-    total_wait = 0
-    total_turn = 0
-    for pid, arr, burst, idx in procs:
-        comp = completion[idx]
-        turn = turnaround[idx]
-        wait = waiting[idx]
-        total_wait += wait
-        total_turn += turn
-        out.append(f"{pid} {comp} {turn} {wait}")
-    out.append(f"{total_wait / n:.4f} {total_turn / n:.4f}")
-    sys.stdout.write("\n".join(out))
+            reg[t] += int(instr)
+
+    sys.stdout.write(f"{x}\n{stale_cnt}\n")
 
 if __name__ == "__main__":
     main()

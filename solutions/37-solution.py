@@ -1,50 +1,29 @@
 import sys
 
 def main():
-    data = sys.stdin.buffer.read().split()
+    data = sys.stdin.read().split()
     if not data:
         return
     n = int(data[0])
-    head = int(data[1])
-    value = [0] * n
-    nxt = [0] * n
-    p = 2
-    for i in range(n):
-        value[i] = int(data[p])
-        nxt[i] = int(data[p + 1])
-        p += 2
-    k = int(data[p])
+    titles = data[1:1 + n]
 
-    # add dummy node at index n
-    dummy = n
-    value.append(0)          # dummy value unused
-    nxt.append(head)         # dummy next points to current head
+    buckets = []               # list of lists, each bucket's titles
+    key_to_idx = {}            # canonical key -> bucket index
 
-    # lead pointer k steps ahead
-    lead = head
-    for _ in range(k):
-        lead = -1 if lead == -1 else nxt[lead]
+    for title in titles:
+        key = ''.join(sorted(title))
+        idx = key_to_idx.get(key)
+        if idx is None:
+            idx = len(buckets)
+            key_to_idx[key] = idx
+            buckets.append([title])
+        else:
+            buckets[idx].append(title)
 
-    trail = dummy
-    while lead != -1:
-        lead = -1 if lead == -1 else nxt[lead]
-        trail = nxt[trail]
-
-    del_node = nxt[trail]
-    sys.stdout.write(f"{del_node} {value[del_node]}\n")
-    # unlink the node
-    nxt[trail] = -1 if del_node == -1 else nxt[del_node]
-
-    new_head = nxt[dummy]
-    if new_head == -1:
-        sys.stdout.write("EMPTY")
-    else:
-        res = []
-        cur = new_head
-        while cur != -1:
-            res.append(str(value[cur]))
-            cur = nxt[cur]
-        sys.stdout.write(' '.join(res))
+    out_lines = [str(len(buckets))]
+    for bucket in buckets:
+        out_lines.append(' '.join(bucket))
+    sys.stdout.write('\n'.join(out_lines))
 
 if __name__ == "__main__":
     main()

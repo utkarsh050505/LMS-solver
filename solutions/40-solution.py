@@ -1,25 +1,21 @@
 import sys
 
-def solve():
+def main():
     data = sys.stdin.read().split()
     if not data:
         return
     n = int(data[0])
-    target = int(data[1])
-    nums = list(map(int, data[2:2 + n]))
-    lo, hi = 0, n - 1
-    ans = -1
-    while lo <= hi:
-        mid = (lo + hi) // 2
-        val = nums[mid]
-        if val == target:
-            ans = mid
-            break
-        elif val < target:
-            lo = mid + 1
-        else:
-            hi = mid - 1
-    sys.stdout.write(str(ans))
+    nums = list(map(int, data[1:1 + n]))
+    max1 = -10**19
+    max2 = -10**19
+    for x in nums:
+        if x > max1:
+            max2 = max1
+            max1 = x
+        elif x > max2:
+            max2 = x
+    total = max1 + max2
+    sys.stdout.write(f"{total}\n{max1} {max2}")
 
 if __name__ == "__main__":
-    solve()
+    main()

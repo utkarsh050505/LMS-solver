@@ -1,23 +1,20 @@
-import json, sys
+import sys
+import math
 
-def generate_parentheses(payload):
-    n = payload.get("n", 0)
-    if n < 0:
-        return []
-    if n == 0:
-        return [""]
-    res = []
-    def backtrack(cur, open_cnt, close_cnt):
-        if len(cur) == 2 * n:
-            res.append(cur)
-            return
-        if open_cnt < n:
-            backtrack(cur + '(', open_cnt + 1, close_cnt)
-        if close_cnt < open_cnt:
-            backtrack(cur + ')', open_cnt, close_cnt + 1)
-    backtrack("", 0, 0)
-    return res
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    n = int(data[0])
+    vals = [int(x) for x in data[1:1 + n]]
+    if not vals:
+        return
+    g = vals[0]
+    l = vals[0]
+    for v in vals[1:]:
+        g = math.gcd(g, v)
+        l = (l // math.gcd(l, v)) * v
+    sys.stdout.write(f"{g} {l}\n")
 
 if __name__ == "__main__":
-    payload = json.loads(sys.stdin.read() or "{}")
-    print(json.dumps(generate_parentheses(payload), separators=(",", ":")))
+    solve()

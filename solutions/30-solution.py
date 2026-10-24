@@ -1,24 +1,16 @@
 import sys
 
 def main():
-    data = sys.stdin.read().split()
-    if not data:
-        return
-    n = int(data[0])
-    names = data[1:1 + n]
-
-    freq = {}
-    for name in names:
-        freq[name] = freq.get(name, 0) + 1
-
-    best_name = None
-    best_count = -1
-    for name, cnt in freq.items():
-        if cnt > best_count or (cnt == best_count and name < best_name):
-            best_name = name
-            best_count = cnt
-
-    sys.stdout.write(f"{best_name} {best_count}")
+    s = sys.stdin.read()
+    chars = [c.lower() for c in s if c.isalnum()]
+    i, j = 0, len(chars) - 1
+    while i < j:
+        if chars[i] != chars[j]:
+            print("NO")
+            return
+        i += 1
+        j -= 1
+    print("YES")
 
 if __name__ == "__main__":
     main()

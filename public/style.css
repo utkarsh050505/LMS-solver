@@ -196,6 +196,17 @@ body {
   font-weight: 800;
 }
 
+/* "Don't vibe code. Hire me" link */
+.hire-pill {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hire-pill:focus-visible {
+  outline: 2px solid var(--accent-cyan-light);
+  outline-offset: 2px;
+}
+
 /* ─── Main Content Container ───────────────────────────────── */
 .main-container {
   max-width: 1100px;
@@ -564,6 +575,27 @@ body {
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+.status-queued {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-failed {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.form-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-red);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+}
+
 /* ─── Progress Bar ─────────────────────────────────────────── */
 .progress-section {
   padding: 20px 28px;
@@ -718,6 +750,11 @@ body {
 .badge-accepted {
   background: rgba(16, 185, 129, 0.15);
   color: var(--accent-green);
+}
+
+.badge-failed {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--accent-red);
 }
 
 /* ─── Terminal Logs ────────────────────────────────────────── */
@@ -905,6 +942,16 @@ body {
   color: var(--accent-cyan-light);
 }
 
+.footer-text a {
+  color: var(--accent-cyan-light);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-text a:hover {
+  text-decoration: underline;
+}
+
 .footer-copy {
   font-size: 0.72rem;
   color: var(--text-dim);
@@ -929,4 +976,22 @@ body {
   .stats-ribbon { display: none; }
   .action-bar { flex-direction: column; gap: 16px; text-align: center; }
   .congrats-box { flex-direction: column; }
+}
+
+@media (max-width: 560px) {
+  .nav-container { padding: 0 16px; gap: 12px; }
+  .brand-badge { display: none; }
+  .brand-title { font-size: 1rem; white-space: nowrap; }
+  .hire-pill { padding: 6px 10px; font-size: 0.72rem; white-space: nowrap; }
+  .hire-pill .pulse-dot { display: none; }
+  .main-container { padding: 28px 16px 48px; }
+  .card-header { padding: 18px 20px; flex-wrap: wrap; gap: 10px; }
+  .solve-form { padding: 20px; }
+}
+
+@media (max-width: 400px) {
+  .logo-box { display: none; }
+  .nav-container { padding: 0 12px; }
+  .brand-title { font-size: 0.92rem; }
+  .hire-pill .verified-icon { display: none; }
 }

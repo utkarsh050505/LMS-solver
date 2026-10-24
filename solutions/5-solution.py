@@ -5,35 +5,20 @@ def main():
     if not data:
         return
     n = int(data[0])
-    events = [(data[1 + 3 * i], data[2 + 3 * i], data[3 + 3 * i]) for i in range(n)]
-    lock_state = {}
-    for idx, (op, thread, mutex) in enumerate(events, start=1):
-        if op == "LOCK":
-            if mutex in lock_state:
-                holder = lock_state[mutex]
-                if holder == thread:
-                    print(f"VIOLATION {idx} REENTER")
-                else:
-                    print(f"VIOLATION {idx} DOUBLE")
-                return
-            else:
-                lock_state[mutex] = thread
-        else:  # UNLOCK
-            if mutex not in lock_state:
-                print(f"VIOLATION {idx} UNHELD")
-                return
-            holder = lock_state[mutex]
-            if holder != thread:
-                print(f"VIOLATION {idx} FOREIGN")
-                return
-            else:
-                del lock_state[mutex]
-    # No violations
-    print("OK")
-    held = sorted(lock_state.items())
-    print(len(held))
-    for m, t in held:
-        print(f"{m} {t}")
+    k = int(data[1])
+    target = list(map(int, data[2:2 + k]))
+    last = target[-1]
+    target_set = set(target)
+    script_chars = []
+    for i in range(1, last + 1):
+        script_chars.append('+')
+        if i not in target_set:
+            script_chars.append('-')
+    pushes = last
+    pops = last - k
+    script = ''.join(script_chars)
+    print(pushes, pops)
+    print(script)
 
 if __name__ == "__main__":
     main()

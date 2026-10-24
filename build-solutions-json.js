@@ -1,6 +1,7 @@
-// Compiles all 42 problem solutions and results into a single solutions.json
+// Compiles all problem solutions and results into a single solutions.json
 const fs = require("fs");
 const path = require("path");
+const { slugOf } = require("./problem-store");
 
 const PROBLEMS_FILE = path.join(__dirname, "problems.json");
 const RESULTS_FILE = path.join(__dirname, "results.json");
@@ -20,10 +21,12 @@ function buildSolutionsJson() {
     }
   }
 
+  // Keyed by slug: result indices go stale when problems are added to the course.
+  // Results can come from several accounts; any Accepted verifies the solution.
   const resultsMap = {};
   results.forEach((r) => {
-    resultsMap[r.index] = r;
-    resultsMap[r.url] = r;
+    const slug = slugOf(r.url);
+    if (!resultsMap[slug] || r.result === "Accepted") resultsMap[slug] = r;
   });
 
   const allSolutions = [];
@@ -36,7 +39,7 @@ function buildSolutionsJson() {
       code = fs.readFileSync(solutionPath, "utf-8");
     }
 
-    const res = resultsMap[i] || resultsMap[prob.href] || {};
+    const res = resultsMap[slugOf(prob.href)] || {};
 
     allSolutions.push({
       id: i + 1,

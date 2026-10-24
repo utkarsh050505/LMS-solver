@@ -1,69 +1,26 @@
 import sys
 
 def solve():
-    data = sys.stdin.buffer.read().split()
-    it = iter(data)
-    n = int(next(it))
-    head = int(next(it))
-    tail = int(next(it))
-    value = [0] * n
-    prv = [0] * n
-    nxt = [0] * n
-    for i in range(n):
-        value[i] = int(next(it))
-        prv[i] = int(next(it))
-        nxt[i] = int(next(it))
-    q = int(next(it))
-    total = 0
-    for _ in range(q):
-        x = int(next(it))
-        c = int(next(it))
-        pos = 1
-        cur = head
-        found = -1
-        while cur != -1:
-            if value[cur] == x:
-                found = cur
-                break
-            cur = nxt[cur]
-            pos += 1
-        if found == -1:
-            total += c * n
-            continue
-        total += c * pos
-        if found != head:
-            p = prv[found]
-            nx = nxt[found]
-            # unlink found
-            if p != -1:
-                nxt[p] = nx
-            if nx != -1:
-                prv[nx] = p
-            else:
-                tail = p
-            # insert at front
-            prv[found] = -1
-            nxt[found] = head
-            prv[head] = found
-            head = found
-    # build forward order
-    forward = []
-    cur = head
-    while cur != -1:
-        forward.append(cur)
-        cur = nxt[cur]
-    # build backward order from tail
-    backward = []
-    cur = tail
-    while cur != -1:
-        backward.append(cur)
-        cur = prv[cur]
-    out_lines = []
-    out_lines.append(str(total))
-    out_lines.append(' '.join(map(str, forward)))
-    out_lines.append(' '.join(str(value[i]) for i in forward))
-    out_lines.append(' '.join(map(str, backward)))
-    sys.stdout.write('\n'.join(out_lines))
+    s = sys.stdin.read()
+    if not s:
+        return
+    s = s.rstrip('\n')
+    # In case there are multiple lines, take the first line as the string
+    if '\n' in s:
+        s = s.splitlines()[0]
+    vowels = set('aeiouAEIOU')
+    chars = list(s)
+    i, j = 0, len(chars) - 1
+    while i < j:
+        while i < j and chars[i] not in vowels:
+            i += 1
+        while i < j and chars[j] not in vowels:
+            j -= 1
+        if i < j:
+            chars[i], chars[j] = chars[j], chars[i]
+            i += 1
+            j -= 1
+    sys.stdout.write(''.join(chars))
 
 if __name__ == "__main__":
     solve()

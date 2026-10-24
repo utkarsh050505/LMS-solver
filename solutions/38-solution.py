@@ -1,38 +1,20 @@
 import sys
 
-def main():
-    data = sys.stdin.buffer.read().split()
-    if not data:
-        return
-    n = int(data[0])
-    head = int(data[1])
-    value = [0] * n
-    nxt = [0] * n
-    p = 2
-    for i in range(n):
-        value[i] = int(data[p])
-        nxt[i] = int(data[p + 1])
-        p += 2
+def max_supplies(costs, credits):
+    costs.sort()
+    count = 0
+    total = 0
+    for c in costs:
+        total += c
+        if total > credits:
+            break
+        count += 1
+    return count
 
-    slow = head
-    fast = head
-    while fast != -1 and nxt[fast] != -1:
-        slow = nxt[slow]
-        fast = nxt[nxt[fast]]
-
-    # Output middle slot and its value
-    out_lines = []
-    out_lines.append(f"{slow} {value[slow]}")
-
-    # Collect values from middle to end
-    vals = []
-    cur = slow
-    while cur != -1:
-        vals.append(str(value[cur]))
-        cur = nxt[cur]
-    out_lines.append(" ".join(vals))
-
-    sys.stdout.write("\n".join(out_lines))
-
-if __name__ == "__main__":
-    main()
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    sys.exit()
+n = data[0]
+costs = data[1:1 + n]
+credits = data[1 + n] if len(data) > 1 + n else 0
+print(max_supplies(costs, credits))

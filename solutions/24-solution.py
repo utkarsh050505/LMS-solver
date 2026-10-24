@@ -1,18 +1,18 @@
-import json, sys
+import sys
 
-def erase_overlap_intervals(payload):
-    intervals = payload.get("intervals", [])
-    if not intervals:
-        return 0
-    intervals.sort(key=lambda x: x[1])
-    kept = 0
-    last_end = -10**18
-    for s, e in intervals:
-        if s >= last_end:
-            kept += 1
-            last_end = e
-    return len(intervals) - kept
+def main():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    n = int(data[0])
+    total_bits = 0
+    power_cnt = 0
+    for i in range(1, n + 1):
+        v = int(data[i])
+        total_bits += v.bit_count()
+        if v > 0 and (v & (v - 1)) == 0:
+            power_cnt += 1
+    sys.stdout.write(f"{total_bits} {power_cnt}")
 
 if __name__ == "__main__":
-    payload = json.loads(sys.stdin.read() or "{}")
-    print(json.dumps(erase_overlap_intervals(payload), separators=(",", ":")))
+    main()

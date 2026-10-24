@@ -1,20 +1,29 @@
 import sys
 
-def max_supplies(costs, credits):
-    costs.sort()
-    count = 0
-    total = 0
-    for c in costs:
-        total += c
-        if total > credits:
-            break
-        count += 1
-    return count
+def solve():
+    data = sys.stdin.buffer.read().split()
+    if not data:
+        return
+    R = int(data[0])
+    C = int(data[1])
+    idx = 2
+    row_sums = [0] * R
+    col_sums = [0] * C
+    grand = 0
 
-data = list(map(int, sys.stdin.read().split()))
-if not data:
-    sys.exit()
-n = data[0]
-costs = data[1:1 + n]
-credits = data[1 + n] if len(data) > 1 + n else 0
-print(max_supplies(costs, credits))
+    for r in range(R):
+        r_sum = 0
+        for c in range(C):
+            val = int(data[idx])
+            idx += 1
+            r_sum += val
+            col_sums[c] += val
+        row_sums[r] = r_sum
+        grand += r_sum
+
+    sys.stdout.write(" ".join(map(str, row_sums)) + "\n")
+    sys.stdout.write(" ".join(map(str, col_sums)) + "\n")
+    sys.stdout.write(str(grand) + "\n")
+
+if __name__ == "__main__":
+    solve()

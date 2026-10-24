@@ -1,44 +1,37 @@
 import sys
 
-def solve():
+def solve(s: str) -> str:
+    l, r = 0, len(s) - 1
+    res = []
+    while l <= r:
+        if s[l] < s[r]:
+            res.append(s[l])
+            l += 1
+        elif s[l] > s[r]:
+            res.append(s[r])
+            r -= 1
+        else:
+            i = 0
+            while l + i <= r - i and s[l + i] == s[r - i]:
+                i += 1
+            if l + i > r - i:  # all equal
+                res.append(s[l])
+                l += 1
+            elif s[l + i] < s[r - i]:
+                res.append(s[l])
+                l += 1
+            else:
+                res.append(s[r])
+                r -= 1
+    return ''.join(res)
+
+def main():
     data = sys.stdin.read().split()
     if not data:
         return
-    it = iter(data)
-    n = int(next(it))
-    q = int(next(it))
-    fat = [int(next(it)) for _ in range(n)]
-    starts = [int(next(it)) for _ in range(q)]
-
-    reachable = [False] * n
-    out_lines = []
-
-    for start in starts:
-        cur = start
-        visited = set()
-        chain = []
-        while True:
-            if cur < 0 or cur >= n:
-                out_lines.append("RANGE")
-                break
-            if cur in visited:
-                out_lines.append("LOOP")
-                break
-            if fat[cur] == -2:
-                out_lines.append(f"FREE {cur}")
-                break
-            visited.add(cur)
-            chain.append(cur)
-            reachable[cur] = True
-            nxt = fat[cur]
-            if nxt == -1:
-                out_lines.append(str(len(chain)) + " " + " ".join(map(str, chain)))
-                break
-            cur = nxt
-
-    lost = sum(1 for i in range(n) if fat[i] != -2 and not reachable[i])
-    out_lines.append(str(lost))
-    sys.stdout.write("\n".join(out_lines))
+    t = int(data[0])
+    outputs = [solve(data[i + 1]) for i in range(t)]
+    sys.stdout.write("\n".join(outputs))
 
 if __name__ == "__main__":
-    solve()
+    main()

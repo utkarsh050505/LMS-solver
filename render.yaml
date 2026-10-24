@@ -1,0 +1,16 @@
+# One-click deploy on Render: Dashboard → New → Blueprint → pick this repo → Apply.
+services:
+  - type: web
+    name: lms-auto-solver
+    runtime: docker
+    # "free" sleeps after 15 min idle and has 512 MB RAM / 0.1 CPU (slow, can stop mid-run).
+    # Switch to "starter" for reliable runs.
+    plan: free
+    region: singapore
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # One Chromium per run: keep this at 1 on 512 MB instances
+      - key: MAX_CONCURRENT_JOBS
+        value: "1"

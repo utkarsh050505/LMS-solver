@@ -1,15 +1,18 @@
 {
   "name": "lms-ki-mkc",
   "version": "1.0.0",
-  "description": "",
+  "description": "BMSCE LMS competitive-coding auto-solver. Built by Utkarsh (https://github.com/utkarsh050505).",
   "main": "index.js",
   "scripts": {
     "login": "node login.js",
     "login:debug": "set HEADLESS=false && node login.js",
+    "login:google": "node login.js --google",
     "solve": "node solve.js",
     "solve:debug": "set HEADLESS=false && node solve.js",
     "solve-all": "node runner.js",
     "solve:all": "node solve.js --all",
+    "solve:new": "node solve.js --all --scrape",
+    "solve:google": "node solve.js --all --google",
     "start": "node runner.js",
     "web": "node server.js",
     "web:dev": "node server.js",
@@ -18,11 +21,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Utkarsh (https://github.com/utkarsh050505)",
+  "homepage": "https://github.com/utkarsh050505/LMS-solver",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/utkarsh050505/LMS-solver.git"
+  },
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
-    "cors": "^2.8.6",
     "dotenv": "^18.0.8",
     "express": "^5.3.0",
     "groq-sdk": "^1.6.0",

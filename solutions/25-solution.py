@@ -1,16 +1,22 @@
 import sys
 
 def solve():
-    data = sys.stdin.read().strip().split()
+    data = sys.stdin.buffer.read().split()
     if not data:
-        print(0)
         return
-    nums = list(map(int, data))
-    distinct = set(nums)
-    mn = min(distinct)
-    mx = max(distinct)
-    missing = (mx - mn + 1) - len(distinct)
-    print(missing)
+    n = int(data[0])
+    grid = []
+    idx = 1
+    for _ in range(n):
+        grid.append([data[idx + j].decode() for j in range(n)])
+        idx += n
+
+    out = []
+    for i in range(n):
+        row = [grid[n - 1 - j][i] for j in range(n)]
+        out.append(" ".join(row))
+
+    sys.stdout.write("\n".join(out) + "\n")
 
 if __name__ == "__main__":
     solve()

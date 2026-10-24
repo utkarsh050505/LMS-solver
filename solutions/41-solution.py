@@ -1,14 +1,17 @@
 import sys
 
-def main():
+def solve():
     data = sys.stdin.read().split()
     if not data:
         return
     n = int(data[0])
-    vals = [int(data[i]) for i in range(1, 1 + n)]
-    x = int(data[1 + n]) if len(data) > 1 + n else None
-    result = [str(v) for v in vals if v != x]
-    sys.stdout.write(' '.join(result) if result else 'EMPTY')
+    k = int(data[1])
+    a = data[2:2 + n]
+    if n > 0:
+        k %= n
+        if k > 0:
+            a = a[n - k:] + a[:n - k]
+    sys.stdout.write(" ".join(a) + "\n")
 
 if __name__ == "__main__":
-    main()
+    solve()

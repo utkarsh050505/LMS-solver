@@ -1,31 +1,25 @@
 import sys
 
-def solve():
+def to_min(t: bytes) -> int:
+    h, m = t.split(b':')
+    return int(h) * 60 + int(m)
+
+def main():
     data = sys.stdin.buffer.read().split()
     if not data:
         return
-    it = iter(data)
-    P = int(next(it))
-    n = int(next(it))
-    q = int(next(it))
-    frames = [int(next(it)) for _ in range(n)]
-    limit = n * P
-    mask = P - 1
-    shift = P.bit_length() - 1  # since P is power of two
-    out_lines = []
-    for _ in range(q):
-        a = int(next(it))
-        if a >= limit:
-            out_lines.append("SEGV")
-        else:
-            page = a >> shift
-            offset = a & mask
-            f = frames[page]
-            if f == -1:
-                out_lines.append(f"FAULT {page}")
-            else:
-                out_lines.append(str(f * P + offset))
-    sys.stdout.write("\n".join(out_lines))
+    n = int(data[0])
+    total = 0
+    overnight = 0
+    idx = 1
+    for _ in range(n):
+        start = to_min(data[idx]); end = to_min(data[idx + 1])
+        idx += 2
+        if end <= start:
+            overnight += 1
+            end += 1440
+        total += end - start
+    sys.stdout.write(f"{total} {overnight}")
 
 if __name__ == "__main__":
-    solve()
+    main()

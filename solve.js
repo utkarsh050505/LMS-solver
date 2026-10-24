@@ -7,6 +7,18 @@ const Groq = require("groq-sdk");
 const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
+const {
+  RESULTS_FILE,
+  SOLUTIONS_JSON_FILE,
+  SOLUTIONS_DIR,
+  slugOf,
+  loadProblems,
+  loadResults,
+  isAccepted,
+  solutionsMetadata,
+  syncToProblems,
+} = require("./problem-store");
+const { promptCredentials, promptEmail } = require("./credentials");
 dotenv.config();
 
 // ─── Config ────────────────────────────────────────────────
@@ -14,9 +26,23 @@ const LMS_BASE = "https://lms.bmsce.in";
 const LOGIN_URL = `${LMS_BASE}/login`;
 const SESSION_FILE = path.join(__dirname, "session", "cookies.json");
 const SCREENSHOT_DIR = path.join(__dirname, "screenshots");
-const SOLUTIONS_DIR = path.join(__dirname, "solutions");
-const RESULTS_FILE = path.join(__dirname, "results.json");
-const SOLUTIONS_JSON_FILE = path.join(__dirname, "solutions.json");
+const USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+// { email, password } asked at startup by login(); kept only in memory
+let credentials = null;
+
+// Total submissions per problem (first try + Groq retries with judge feedback)
+const MAX_ATTEMPTS = Math.max(1, parseInt(process.env.MAX_ATTEMPTS, 10) || 3);
+const VERDICT_TIMEOUT_MS = 60000;
+
+const FINAL_VERDICTS = [
+  ["Accepted", "all\\s*\\d+\\s*test cases passed|accepted"],
+  ["Wrong Answer", "wrong answer"],
+  ["Time Limit Exceeded", "time limit exceeded"],
+  ["Runtime Error", "runtime error"],
+  ["Compilation Error", "compilation error"],
+];
 
 const GROQ_MODELS = [
   process.env.GROQ_MODEL || "openai/gpt-oss-120b",
@@ -41,12 +67,12 @@ function ensureDir(dir) {
 
 // ─── Cache Management (solutions.json) ────────────────────
 function getCachedSolution(index, problemUrl) {
-  // Check solutions.json first
+  // Check solutions.json first (matched by slug; indices shift when problems are added)
   if (fs.existsSync(SOLUTIONS_JSON_FILE)) {
     try {
       const data = JSON.parse(fs.readFileSync(SOLUTIONS_JSON_FILE, "utf-8"));
       const list = data.solutions || [];
-      const match = list.find((s) => s.index === index || s.href === problemUrl);
+      const match = list.find((s) => slugOf(s.href) === slugOf(problemUrl));
       if (match && match.code && match.code.trim().length > 20) {
         return match.code.trim();
       }
@@ -80,7 +106,7 @@ function updateSolutionsJson(index, title, problemUrl, code, verdict) {
   if (!Array.isArray(data.solutions)) data.solutions = [];
 
   const existingIdx = data.solutions.findIndex(
-    (s) => s.index === index || s.href === problemUrl
+    (s) => slugOf(s.href) === slugOf(problemUrl)
   );
 
   const entry = {
@@ -102,28 +128,23 @@ function updateSolutionsJson(index, title, problemUrl, code, verdict) {
   }
 
   data.solutions.sort((a, b) => a.index - b.index);
-
-  const accepted = data.solutions.filter((s) => s.verdict === "Accepted").length;
-  data.metadata = {
-    generatedAt: new Date().toISOString(),
-    totalProblems: data.solutions.length,
-    acceptedCount: accepted,
-    successRate: `${((accepted / (data.solutions.length || 1)) * 100).toFixed(1)}%`,
-  };
+  data.metadata = solutionsMetadata(data.solutions);
 
   fs.writeFileSync(SOLUTIONS_JSON_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
 // ─── Auto-Login Helper ─────────────────────────────────────
 async function performLogin(page) {
-  const email = process.env.LMS_EMAIL;
-  const password = process.env.LMS_PASSWORD;
-
-  if (!email || !password) {
-    throw new Error("Missing LMS_EMAIL or LMS_PASSWORD in .env");
+  if (credentials && credentials.manual) {
+    // Google / manual sessions carry no password, so we can't silently re-login
+    throw new Error("Your LMS session expired. Run `npm run login:google` again to sign in.");
   }
+  if (!credentials) {
+    throw new Error("Not logged in. Run login() first so the LMS email/password are asked.");
+  }
+  const { email, password } = credentials;
 
-  log("🔐 Logging into BMSCE LMS...");
+  log(`🔐 Logging into BMSCE LMS as ${email}...`);
   await page.goto(LOGIN_URL, { waitUntil: "networkidle", timeout: 30000 });
 
   await page.fill('input[type="email"], input[name="email"], input[placeholder*="email" i]', email);
@@ -141,10 +162,96 @@ async function performLogin(page) {
   await page.waitForNavigation({ waitUntil: "networkidle", timeout: 30000 }).catch(() => {});
   await page.waitForTimeout(2000);
 
+  if (page.url().includes("/login")) {
+    const errorMsg = await page
+      .evaluate(() => {
+        const err = document.querySelector('[role="alert"], .text-destructive, .text-red-500, [data-sonner-toast]');
+        return err ? err.innerText.trim() : "";
+      })
+      .catch(() => "");
+    throw new Error(`Login failed: ${errorMsg || "still on the login page — check your email and password"}`);
+  }
+
   const cookies = await page.context().cookies();
   ensureDir(path.dirname(SESSION_FILE));
   fs.writeFileSync(SESSION_FILE, JSON.stringify(cookies, null, 2));
   log("✅ Login successful, session cookies saved.");
+}
+
+// Ask for the LMS email/password and log in from a clean browser session, so a
+// previous account's saved cookies are never reused. Returns the account email.
+async function login() {
+  for (let attempt = 1; ; attempt++) {
+    credentials = await promptCredentials();
+    const browser = await chromium.launch({ headless: process.env.HEADLESS !== "false" });
+    try {
+      const context = await browser.newContext({ bypassCSP: true, userAgent: USER_AGENT });
+      await performLogin(await context.newPage());
+      return credentials.email;
+    } catch (err) {
+      if (attempt >= 3 || !process.stdin.isTTY) throw err;
+      console.error(`❌ ${err.message} — please try again.`);
+    } finally {
+      await browser.close();
+    }
+  }
+}
+
+function currentAccount() {
+  return credentials ? credentials.email.toLowerCase() : null;
+}
+
+// ─── Google / Manual Login (for students who use "Sign in with Google") ─────
+// Opens a REAL, visible browser on the LMS login page and lets the student log
+// in themselves — including "Sign in with Google". Their Google password is only
+// ever typed into Google's own page; this tool never sees, asks for or stores it.
+// We keep only the resulting LMS session cookies, exactly like the password flow.
+async function manualLogin() {
+  // MANUAL_HEADLESS is a test-only knob (headless + non-interactive); real use needs a TTY.
+  if (!process.stdin.isTTY && !process.env.MANUAL_HEADLESS) {
+    throw new Error("Google login needs an interactive terminal — it opens a browser window for you.");
+  }
+
+  console.log("\n🌐 A browser window will open on the BMSCE LMS login page.");
+  console.log('   Log in the way you normally do — including "Sign in with Google".');
+  console.log("   Your Google password goes into Google's own page, never into this tool.\n");
+
+  // Visible by default; MANUAL_HEADLESS is only for automated testing.
+  const browser = await chromium.launch({ headless: !!process.env.MANUAL_HEADLESS });
+  try {
+    const context = await browser.newContext({ bypassCSP: true, userAgent: USER_AGENT });
+    const page = await context.newPage();
+    await page.goto(LOGIN_URL, { waitUntil: "domcontentloaded", timeout: 45000 }).catch(() => {});
+
+    log("Waiting for you to finish logging in (up to 5 minutes)...");
+    const deadline = Date.now() + 5 * 60 * 1000;
+    while (Date.now() < deadline) {
+      await page.waitForTimeout(1500);
+      let url;
+      try {
+        url = page.url();
+      } catch (e) {
+        throw new Error("The browser window was closed before login finished. Please try again.");
+      }
+      // Logged in once we're back on the LMS and no longer on the login page
+      if (url.startsWith(LMS_BASE) && !url.includes("/login")) break;
+    }
+    if (page.url().includes("/login")) {
+      throw new Error("Login wasn't completed in time. Please run `npm run login:google` again.");
+    }
+
+    const cookies = await context.cookies();
+    if (!cookies.length) throw new Error("No session cookies were captured. Please try again.");
+    ensureDir(path.dirname(SESSION_FILE));
+    fs.writeFileSync(SESSION_FILE, JSON.stringify(cookies, null, 2));
+    log("✅ Logged in — session saved. You can close the browser window.");
+
+    const email = await promptEmail();
+    credentials = { email, manual: true };
+    return email;
+  } finally {
+    await browser.close().catch(() => {});
+  }
 }
 
 async function ensureAuthenticated(page) {
@@ -214,13 +321,13 @@ async function scrapeProblem(page, problemUrl) {
 }
 
 // ─── Step 2: Ask Groq LLM for a solution ──────────────────
-async function getSolutionFromGroq(problemData) {
+async function getSolutionFromGroq(problemData, previousAttempt = null) {
   if (!groq) {
     throw new Error("GROQ_API_KEY is not configured in .env!");
   }
 
   const { title, description, examples, starterCode } = problemData;
-  log(`Asking Groq LLM for solution to: ${title}`);
+  log(`Asking Groq LLM for solution to: ${title}${previousAttempt ? " (retry with judge feedback)" : ""}`);
 
   const systemPrompt = `You are a world-class competitive programmer.
 Solve the given problem in Python 3.
@@ -242,7 +349,18 @@ EXAMPLES:
 ${examples}
 
 ${starterCode ? `STARTER CODE TEMPLATE:\n${starterCode}\n` : ""}
+${
+  previousAttempt
+    ? `PREVIOUS ATTEMPT (verdict: ${previousAttempt.verdict}):
+${previousAttempt.code}
 
+JUDGE OUTPUT:
+${previousAttempt.details}
+
+The previous attempt was rejected. Find the bug (wrong logic, missed edge case, output format, or too slow) and write a corrected solution.
+`
+    : ""
+}
 Implement the complete Python 3 solution:`;
 
   let lastError = null;
@@ -256,16 +374,22 @@ Implement the complete Python 3 solution:`;
           { role: "user", content: userPrompt },
         ],
         model: model,
-        temperature: 0.1,
-        max_tokens: 4096,
+        temperature: previousAttempt ? 0.4 : 0.1,
+        max_tokens: 8192,
       });
 
-      let code = completion.choices[0].message.content.trim();
+      let code = (completion.choices[0].message.content || "").trim();
 
-      // Clean up markdown fences if present
+      // Clean up markdown fences if present (also when the model wraps code in prose)
+      const fenced = code.match(/```(?:python|py)?[^\n]*\n([\s\S]*?)```/i);
+      if (fenced) code = fenced[1];
       code = code.replace(/^```(?:python|py)?\s*\n?/i, "");
       code = code.replace(/\n?```\s*$/i, "");
       code = code.trim();
+
+      if (code.length < 20) {
+        throw new Error("Empty or truncated response");
+      }
 
       log(`✅ Received solution from ${model} (${code.split("\n").length} lines)`);
       return code;
@@ -279,7 +403,10 @@ Implement the complete Python 3 solution:`;
 }
 
 // ─── Step 3: Navigate to Solve page, inject code, submit ───
-async function submitSolution(page, problemUrl, code, index = 0) {
+// options.screenshots: false skips the before/after screenshots (the web server
+// uses this so other students' LMS pages are never written to disk)
+async function submitSolution(page, problemUrl, code, index = 0, options = {}) {
+  const screenshots = options.screenshots !== false;
   const solveUrl = problemUrl.replace(
     /\/problems\/([^?]+)/,
     "/problems/$1/solve"
@@ -384,11 +511,13 @@ async function submitSolution(page, problemUrl, code, index = 0) {
   await page.waitForTimeout(500);
 
   // Save screenshot of code in editor before submit
-  ensureDir(SCREENSHOT_DIR);
-  await page.screenshot({
-    path: path.join(SCREENSHOT_DIR, `before-submit-${index}.png`),
-    fullPage: false,
-  });
+  if (screenshots) {
+    ensureDir(SCREENSHOT_DIR);
+    await page.screenshot({
+      path: path.join(SCREENSHOT_DIR, `before-submit-${index}.png`),
+      fullPage: false,
+    });
+  }
 
   // Find Submit button
   log("Locating Submit button...");
@@ -397,61 +526,68 @@ async function submitSolution(page, problemUrl, code, index = 0) {
     throw new Error("Submit button not found on solve page!");
   }
 
+  // Count verdict phrases already on the page (problem statement, earlier results)
+  // so only phrases that newly appear after Submit count as this submission's verdict.
+  const countVerdicts = () =>
+    page.evaluate((sources) => {
+      const text = document.body.innerText;
+      const toast = document.querySelector('[data-sonner-toast], [role="alert"], .toast');
+      return {
+        counts: sources.map((src) => (text.match(new RegExp(src, "gi")) || []).length),
+        toast: toast ? toast.textContent.trim() : null,
+      };
+    }, FINAL_VERDICTS.map(([, src]) => src));
+
+  const lowest = (await countVerdicts()).counts;
+
   log("Clicking Submit...");
   await submitBtn.click();
 
   // Wait for submission evaluation
-  log("Waiting for test case execution & submission result (up to 30s)...");
+  log(`Waiting for test case execution & submission result (up to ${VERDICT_TIMEOUT_MS / 1000}s)...`);
 
   let submissionResult = "Submitted (Result pending)";
   const startTime = Date.now();
 
-  while (Date.now() - startTime < 30000) {
+  while (Date.now() - startTime < VERDICT_TIMEOUT_MS) {
     await page.waitForTimeout(2000);
 
-    const check = await page.evaluate(() => {
-      const text = document.body.innerText;
-
-      if (/all\s*\d+\s*test cases passed/i.test(text) || /accepted/i.test(text)) {
-        return "Accepted";
-      }
-      if (/wrong answer/i.test(text)) {
-        return "Wrong Answer";
-      }
-      if (/time limit exceeded/i.test(text)) {
-        return "Time Limit Exceeded";
-      }
-      if (/runtime error/i.test(text)) {
-        return "Runtime Error";
-      }
-      if (/compilation error/i.test(text)) {
-        return "Compilation Error";
-      }
-
-      const toast = document.querySelector('[data-sonner-toast], [role="alert"], .toast');
-      if (toast) {
-        return toast.textContent.trim();
-      }
-
-      return null;
+    const { counts, toast } = await countVerdicts();
+    const hit = counts.findIndex((c, k) => c > lowest[k]);
+    counts.forEach((c, k) => {
+      lowest[k] = Math.min(lowest[k], c);
     });
 
-    if (check) {
-      submissionResult = check;
-      if (["Accepted", "Wrong Answer", "Time Limit Exceeded", "Runtime Error", "Compilation Error"].includes(check)) {
-        break;
-      }
+    if (hit >= 0) {
+      submissionResult = FINAL_VERDICTS[hit][0];
+      break;
+    }
+    if (toast) {
+      submissionResult = toast;
     }
   }
 
   // Save screenshot after submit
-  await page.screenshot({
-    path: path.join(SCREENSHOT_DIR, `after-submit-${index}.png`),
-    fullPage: false,
-  });
+  if (screenshots) {
+    await page.screenshot({
+      path: path.join(SCREENSHOT_DIR, `after-submit-${index}.png`),
+      fullPage: false,
+    });
+  }
 
   log(`Verdict for problem [${index}]: ${submissionResult}`);
   return submissionResult;
+}
+
+// Text of the judge's result panel (failing test case, error trace) for retries
+async function scrapeJudgeFeedback(page, verdict) {
+  return page
+    .evaluate((v) => {
+      const text = (document.querySelector("main") || document.body).innerText;
+      const at = text.toLowerCase().lastIndexOf(v.toLowerCase());
+      return at >= 0 ? text.slice(Math.max(0, at - 300), at + 2500) : text.slice(-2500);
+    }, verdict)
+    .catch(() => "");
 }
 
 // ─── Main Pipeline for Single Problem ──────────────────────
@@ -466,8 +602,8 @@ async function solveProblem(problemUrl, index = 0, options = {}) {
   });
 
   const context = await browser.newContext({
-    userAgent:
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    bypassCSP: true,
+    userAgent: USER_AGENT,
     permissions: ["clipboard-read", "clipboard-write"],
   });
 
@@ -486,6 +622,10 @@ async function solveProblem(problemUrl, index = 0, options = {}) {
     // Step 1: Scrape
     log("═══ STEP 1: Scraping problem details ═══");
     const problemData = await scrapeProblem(page, problemUrl);
+    // The page's first heading can be the dashboard greeting ("Good morning, <name>!"),
+    // so prefer the name from the course list in problems.json
+    const listed = loadProblems().find((p) => slugOf(p.href) === slugOf(problemUrl));
+    if (listed) problemData.title = listed.name;
     log(`Problem Title: "${problemData.title}"`);
 
     // Step 2: Solution Resolution (JSON Cache First → Groq API fallback)
@@ -505,29 +645,43 @@ async function solveProblem(problemUrl, index = 0, options = {}) {
       solution = await getSolutionFromGroq(problemData);
     }
 
-    console.log("\n--- Solution to Submit ---");
-    console.log(solution);
-    console.log("--------------------------\n");
+    // Step 3: Paste and Submit (retrying with Groq + judge feedback until Accepted)
+    let result = null;
+    for (let attempt = 1; ; attempt++) {
+      console.log("\n--- Solution to Submit ---");
+      console.log(solution);
+      console.log("--------------------------\n");
 
-    // Step 3: Paste and Submit
-    log("═══ STEP 3: Submitting solution ═══");
-    const result = await submitSolution(page, problemUrl, solution, index);
+      log(`═══ STEP 3: Submitting solution (attempt ${attempt}/${MAX_ATTEMPTS}) ═══`);
+      result = await submitSolution(page, problemUrl, solution, index);
+
+      if (result === "Accepted" || attempt >= MAX_ATTEMPTS) break;
+      if (!FINAL_VERDICTS.some(([v]) => v === result)) {
+        log(`🔁 No final verdict ("${result}") — resubmitting the same code...`);
+        continue;
+      }
+      if (!groq) break;
+
+      const details = await scrapeJudgeFeedback(page, result);
+      log(`🔁 Verdict "${result}" — asking Groq for a fix...`);
+      try {
+        solution = await getSolutionFromGroq(problemData, { code: solution, verdict: result, details });
+      } catch (err) {
+        log(`⚠️ Retry generation failed: ${err.message}`);
+        break;
+      }
+    }
 
     // Update solutions.json & results.json
     updateSolutionsJson(index, problemData.title, problemUrl, solution, result);
 
-    let results = [];
-    if (fs.existsSync(RESULTS_FILE)) {
-      try {
-        results = JSON.parse(fs.readFileSync(RESULTS_FILE, "utf-8"));
-      } catch (e) {
-        results = [];
-      }
-    }
-
-    results = results.filter((r) => r.index !== index);
+    // Verdicts are per account: another student's Accepted doesn't count for this one
+    const slug = slugOf(problemUrl);
+    const account = currentAccount();
+    const results = loadResults().filter((r) => !(slugOf(r.url) === slug && r.account === account));
     results.push({
       index,
+      account,
       title: problemData.title,
       url: problemUrl,
       result,
@@ -551,13 +705,24 @@ async function solveProblem(problemUrl, index = 0, options = {}) {
 // ─── CLI Entry Point ───────────────────────────────────────
 async function main() {
   const args = process.argv.slice(2);
+  require("./banner").printBanner();
+
+  // Google / "Sign in with Google" users: --google (or --session) opens a visible
+  // browser to log in by hand, so no password is ever typed into this tool.
+  const useGoogle = args.includes("--google") || args.includes("--manual") || args.includes("--session");
+  const account = (useGoogle ? await manualLogin() : await login()).toLowerCase();
+
+  // --scrape: refresh problems.json from the course page first (re-indexes the cache too)
+  if (args.includes("--scrape")) {
+    await require("./scrape-problems").scrapeProblems();
+  }
+
+  // Keep solutions/results indices aligned with the current problems.json order
+  syncToProblems();
+  const problems = loadProblems();
 
   // If --all flag is passed
   if (args.includes("--all")) {
-    const problemsData = JSON.parse(
-      fs.readFileSync(path.join(__dirname, "problems.json"), "utf-8")
-    );
-    const problems = problemsData.problems;
     const force = args.includes("--force");
 
     log(`📋 Starting automated run for all ${problems.length} problems...`);
@@ -565,22 +730,12 @@ async function main() {
     let passed = 0;
     let failed = 0;
     let skipped = 0;
+    const unsolved = [];
 
-    let existingResults = [];
-    if (fs.existsSync(RESULTS_FILE)) {
-      try {
-        existingResults = JSON.parse(fs.readFileSync(RESULTS_FILE, "utf-8"));
-      } catch (e) {
-        existingResults = [];
-      }
-    }
+    const existingResults = loadResults();
 
     for (let i = 0; i < problems.length; i++) {
-      const alreadyAccepted = existingResults.find(
-        (r) => (r.index === i || r.url === problems[i].href) && r.result === "Accepted"
-      );
-
-      if (alreadyAccepted && !force) {
+      if (isAccepted(existingResults, problems[i].href, account) && !force) {
         log(`⏩ Skipping [${i + 1}/${problems.length}] "${problems[i].name}" - Already Accepted!`);
         skipped++;
         passed++;
@@ -597,6 +752,7 @@ async function main() {
         log(`🎉 Problem ${i + 1} completed: ${res.result}`);
       } else {
         failed++;
+        unsolved.push(`  #${i + 1} ${problems[i].name} → ${res.result || res.error}`);
         log(`⚠️ Problem ${i + 1} verdict: ${res.result || res.error}`);
       }
 
@@ -608,20 +764,21 @@ async function main() {
     }
 
     log(`\n🏁 Finished! Summary: ${passed} passed (${skipped} previously solved), ${failed} failed.`);
+    if (unsolved.length) {
+      log(`Not yet accepted (rerun \`npm run solve:all\` or \`node solve.js <#>\`):\n${unsolved.join("\n")}`);
+    }
     log(`Check ${RESULTS_FILE} & ${SOLUTIONS_JSON_FILE} for full status log.`);
     return;
   }
 
   // If a specific number or index is passed (1-based index)
-  if (args[0] && !isNaN(parseInt(args[0]))) {
-    const problemsData = JSON.parse(
-      fs.readFileSync(path.join(__dirname, "problems.json"), "utf-8")
-    );
-    const targetIdx = parseInt(args[0]);
+  const numArg = args.find((a) => /^\d+$/.test(a));
+  if (numArg) {
+    const targetIdx = parseInt(numArg);
     const idx = targetIdx > 0 ? targetIdx - 1 : 0;
-    const problem = problemsData.problems[idx];
+    const problem = problems[idx];
     if (!problem) {
-      console.error(`Problem #${args[0]} not found in problems.json!`);
+      console.error(`Problem #${numArg} not found in problems.json!`);
       process.exit(1);
     }
     await solveProblem(problem.href, idx);
@@ -629,14 +786,16 @@ async function main() {
   }
 
   // Default: Solve Problem 1
-  log("🧪 Running single test problem (Problem 1: Follow the FAT Chain)...");
-  const problemsData = JSON.parse(
-    fs.readFileSync(path.join(__dirname, "problems.json"), "utf-8")
-  );
-  await solveProblem(problemsData.problems[0].href, 0);
+  log(`🧪 Running single test problem (Problem 1: ${problems[0].name})...`);
+  await solveProblem(problems[0].href, 0);
 }
 
 module.exports = {
+  login,
+  manualLogin,
+  currentAccount,
+  performLogin,
+  ensureAuthenticated,
   solveProblem,
   scrapeProblem,
   getSolutionFromGroq,
@@ -646,5 +805,8 @@ module.exports = {
 };
 
 if (require.main === module) {
-  main().catch(console.error);
+  main().catch((err) => {
+    console.error(`❌ ${err.message || err}`);
+    process.exit(1);
+  });
 }
