@@ -762,9 +762,18 @@ async function main() {
   // No password is ever typed into this tool in the first two modes.
   let account;
   if (args.includes("--use-session")) {
+    // Strict: only use the already-saved session (never opens a browser)
     account = await useSavedSession();
   } else if (args.includes("--google") || args.includes("--manual")) {
-    account = await manualLogin();
+    // Smart one-command Google flow: reuse a still-valid saved login if there is
+    // one, otherwise open a browser to log in — then solve. No password either way.
+    if (await sessionIsValid()) {
+      log("✅ Found a valid saved login — reusing it (no browser needed).");
+      credentials = { email: sessionAccountKey(), manual: true };
+      account = credentials.email;
+    } else {
+      account = await manualLogin();
+    }
   } else {
     account = await login();
   }
