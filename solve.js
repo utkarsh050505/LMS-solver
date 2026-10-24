@@ -755,6 +755,9 @@ async function main() {
   const args = process.argv.slice(2);
   require("./banner").printBanner();
 
+  // Only one solve run per folder — a second would overwrite the shared login mid-run
+  require("./lock").acquireLock();
+
   // Login mode:
   //   --use-session : reuse the session saved by `login:google` (no browser re-open)
   //   --google      : open a visible browser to log in by hand (incl. "Sign in with Google")

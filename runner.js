@@ -54,6 +54,9 @@ async function main() {
 
   await ensureSetup();
 
+  // Only one solve run per folder — a second would overwrite the shared login mid-run
+  require("./lock").acquireLock();
+
   // Verify solutions.json exists
   if (!fs.existsSync(SOLUTIONS_JSON)) {
     console.error("❌ Error: solutions.json not found! Re-generating from source...");
